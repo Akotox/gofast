@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ParcelAppTheme {
+class GoFastaAppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       primarySwatch: Colors.teal,
@@ -83,4 +83,8 @@ class ParcelAppTheme {
       ),
     );
   }
+}
+
+TextStyle textStyle(double size, Color color, FontWeight fw) {
+  return GoogleFonts.poppins(fontSize: size, color: color, fontWeight: fw);
 }

@@ -15,7 +15,6 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> pageList = <Widget>[
     const HomePage(),
-    const OutGoing(),
     const HomePage(),
     const HomePage(),
   ];
@@ -41,12 +40,6 @@ class _MainScreenState extends State<MainScreen> {
                       ? const Icon(MaterialCommunityIcons.bike_fast)
                       : const Icon(MaterialCommunityIcons.bike_fast),
                   label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: pageIndex == 1
-                      ? const Icon(MaterialCommunityIcons.cube_send)
-                      : const Icon(MaterialCommunityIcons.cube_send),
-                  label: 'OutGoing',
                 ),
                 BottomNavigationBarItem(
                   icon: pageIndex == 2

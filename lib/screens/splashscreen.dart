@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/services/app_userstate.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
   _navigator() async {
     await Future.delayed(const Duration(milliseconds: 2000), () {});
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => MainScreen()));
+        context, MaterialPageRoute(builder: (context) => AppUserState()));
   }
 
   @override
