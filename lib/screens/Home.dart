@@ -14,32 +14,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     length: 4,
     vsync: this,
   );
-  late TabController _secondController = TabController(
-    length: 4,
-    vsync: this,
-  );
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.white70,
+        backgroundColor: Theme.of(context).iconTheme.color,
         appBar: AppBar(
+          toolbarHeight: 0,
           elevation: 0,
           bottom: TabBar(
             indicatorWeight: 1,
             splashBorderRadius: const BorderRadius.all(Radius.circular(30)),
-            unselectedLabelColor: Colors.grey.shade600,
+            unselectedLabelColor: Colors.grey.withOpacity(0.7),
             labelPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-            labelColor: Colors.green,
+            labelColor: Theme.of(context).backgroundColor,
+            labelStyle: Theme.of(context).textTheme.headline4,
+            indicatorColor: Colors.transparent,
             // indicator: CircleTabIndicator(color: Colors.green, radius: 4),
             tabs: const [
               Tab(
-                text: ('Shopping'),
+                text: ('Incoming Parcels'),
               ),
               Tab(
-                text: ('Deliveries'),
+                text: ('OutGoing Parcels'),
               ),
             ],
           ),
@@ -50,7 +49,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   content(),
-                  receivingTab(tabController: _tabController),
+                  incomingTab(tabController: _tabController),
                 ],
               ),
             ),
@@ -58,7 +57,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   content(),
-                  receivingTab(tabController: _tabController),
+                  outGoingTab(tabController: _tabController),
                 ],
               ),
             ),
@@ -70,7 +69,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget content() {
     return Container(
-      height: 250,
+      height: 200,
       decoration: BoxDecoration(
         color: Theme.of(context).iconTheme.color,
         image: const DecorationImage(
@@ -84,12 +83,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 30, 20, 20.0),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
-                height: 15,
+                height: 5,
               ),
               Row(
                 children: [
@@ -105,10 +104,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ],
               ),
               const SizedBox(
-                height: 15,
+                height: 10,
               ),
               SizedBox(
-                height: 60,
+                height: 50,
                 child: Row(
                   children: [
                     Expanded(
@@ -153,7 +152,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
               const SizedBox(
-                height: 15,
+                height: 20,
               ),
               Container(
                   height: 40,
@@ -214,8 +213,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 }
 
-class receivingTab extends StatelessWidget {
-  const receivingTab({
+class incomingTab extends StatelessWidget {
+  const incomingTab({
     Key? key,
     required TabController tabController,
   })  : _tabController = tabController,
@@ -226,11 +225,19 @@ class receivingTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.fromLTRB(8, 15, 8, 8),
       child: Container(
         height: MediaQuery.of(context).size.height * 0.6,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(19), color: Colors.white),
+            borderRadius: BorderRadius.circular(19),
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFFFFFFF).withOpacity(0.5),
+                Color(0xFF03608F).withOpacity(0.5)
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            )),
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
@@ -248,7 +255,128 @@ class receivingTab extends StatelessWidget {
                     ),
                     labelColor: Colors.white,
                     labelStyle: Theme.of(context).textTheme.headline4,
-                    unselectedLabelColor: Colors.black,
+                    unselectedLabelColor: Colors.grey.withOpacity(0.7),
+                    tabs: const [
+                      Tab(
+                        text: "Dispatch",
+                      ),
+                      Tab(
+                        text: "Picked",
+                      ),
+                      Tab(
+                        text: "Intransit",
+                      ),
+                      Tab(
+                        text: "Delivered",
+                      )
+                    ]),
+              ),
+              Expanded(
+                child: TabBarView(controller: _tabController, children: [
+                  Column(
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(12.0, 10, 20, 10),
+                          child: Container(
+                            child: Text("Welcome"),
+                          )),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12.0, 10, 12, 10),
+                        child: Text(
+                          "widget.content",
+                          style: Theme.of(context).textTheme.headline4,
+                          maxLines: 20,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12.0, 10, 12, 10),
+                        child: Text(
+                          "widget.content",
+                          style: Theme.of(context).textTheme.headline4,
+                          maxLines: 20,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12.0, 10, 12, 10),
+                        child: Text(
+                          "widget.content",
+                          style: Theme.of(context).textTheme.headline4,
+                          maxLines: 20,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ],
+                  ),
+                ]),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class outGoingTab extends StatelessWidget {
+  const outGoingTab({
+    Key? key,
+    required TabController tabController,
+  })  : _tabController = tabController,
+        super(key: key);
+
+  final TabController _tabController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 15, 8, 8),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(19),
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFFFFFFF).withOpacity(0.5),
+                Color(0xFF03608F).withOpacity(0.5)
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            )),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            children: [
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    color: Colors.grey[300]),
+                child: TabBar(
+                    controller: _tabController,
+                    indicator: BoxDecoration(
+                      color: Color(0xFF03608F),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    labelColor: Colors.white,
+                    labelStyle: Theme.of(context).textTheme.headline4,
+                    unselectedLabelColor: Colors.grey.withOpacity(0.7),
                     tabs: const [
                       Tab(
                         text: "Dispatch",

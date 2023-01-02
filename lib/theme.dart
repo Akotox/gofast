@@ -31,13 +31,17 @@ class ParcelAppTheme {
       ),
       dividerColor: Colors.transparent,
       unselectedWidgetColor: const Color(0x50333333),
-      shadowColor: Color(0xFF4C4C4C).withOpacity(0.5),
+      shadowColor: const Color(0xFF4C4C4C).withOpacity(0.5),
       backgroundColor: Colors.white,
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color(0xFF03608F),
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white30),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       fontFamily: 'Poppins',
       textTheme: TextTheme(
         headline1: GoogleFonts.poppins(
-          color: Color.fromARGB(255, 255, 255, 255),
+          color: const Color(0xFFFFFFFF),
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),

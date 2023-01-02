@@ -24,48 +24,58 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: pageList[pageIndex],
-        bottomNavigationBar: BottomNavigationBar(
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
-            selectedLabelStyle: Theme.of(context).textTheme.headline5,
-            unselectedLabelStyle: Theme.of(context).textTheme.headline5,
-            items: [
-              BottomNavigationBarItem(
-                icon: pageIndex == 0
-                    ? const Icon(MaterialCommunityIcons.bike_fast)
-                    : const Icon(MaterialCommunityIcons.bike_fast),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: pageIndex == 1
-                    ? const Icon(MaterialCommunityIcons.cube_send)
-                    : const Icon(MaterialCommunityIcons.cube_send),
-                label: 'OutGoing',
-              ),
-              BottomNavigationBarItem(
-                icon: pageIndex == 2
-                    ? const Icon(Ionicons.notifications_circle)
-                    : const Icon(Ionicons.notifications_circle),
-                label: 'Notifications',
-              ),
-              BottomNavigationBarItem(
-                icon: pageIndex == 3
-                    ? const Icon(FontAwesome.user_circle_o)
-                    : const Icon(
-                        FontAwesome.user_circle_o,
-                      ),
-                label: 'Profile',
-              ),
-            ],
-            currentIndex: pageIndex,
-            unselectedItemColor: Theme.of(context).unselectedWidgetColor,
-            selectedItemColor: Color(0xFF03608F),
-            onTap: ((value) {
-              setState(() {
+        bottomNavigationBar: Theme(
+          data: Theme.of(context).copyWith(
+            // sets the background color of the `BottomNavigationBar`
+            canvasColor:
+                Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+          ),
+          child: BottomNavigationBar(
+              selectedFontSize: 12,
+              unselectedFontSize: 12,
+              selectedLabelStyle: Theme.of(context).textTheme.headline5,
+              unselectedLabelStyle: Theme.of(context).textTheme.headline5,
+              items: [
+                BottomNavigationBarItem(
+                  icon: pageIndex == 0
+                      ? const Icon(MaterialCommunityIcons.bike_fast)
+                      : const Icon(MaterialCommunityIcons.bike_fast),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: pageIndex == 1
+                      ? const Icon(MaterialCommunityIcons.cube_send)
+                      : const Icon(MaterialCommunityIcons.cube_send),
+                  label: 'OutGoing',
+                ),
+                BottomNavigationBarItem(
+                  icon: pageIndex == 2
+                      ? const Icon(Ionicons.notifications_circle)
+                      : const Icon(Ionicons.notifications_circle),
+                  label: 'Notifications',
+                ),
+                BottomNavigationBarItem(
+                  icon: pageIndex == 3
+                      ? const Icon(FontAwesome.user_circle_o)
+                      : const Icon(
+                          FontAwesome.user_circle_o,
+                        ),
+                  label: 'Profile',
+                ),
+              ],
+              currentIndex: pageIndex,
+              unselectedItemColor: Theme.of(context)
+                  .bottomNavigationBarTheme
+                  .unselectedItemColor,
+              selectedItemColor:
+                  Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+              onTap: ((value) {
                 setState(() {
-                  pageIndex = value;
+                  setState(() {
+                    pageIndex = value;
+                  });
                 });
-              });
-            })));
+              })),
+        ));
   }
 }
