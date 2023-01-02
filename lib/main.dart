@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/screens/splashscreen.dart';
 import 'package:gofast/theme.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Go Fast',
       debugShowCheckedModeBanner: false,
       theme: ParcelAppTheme.lightTheme,
-      home: const MainScreen(),
+      home: const SplashScreen(),
     );
   }
 }

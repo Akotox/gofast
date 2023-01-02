@@ -21,13 +21,49 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white70,
-      body: Column(
-        children: [
-          content(),
-          receivingTab(tabController: _tabController),
-        ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.white70,
+        appBar: AppBar(
+          elevation: 0,
+          bottom: TabBar(
+            indicatorWeight: 1,
+            splashBorderRadius: const BorderRadius.all(Radius.circular(30)),
+            unselectedLabelColor: Colors.grey.shade600,
+            labelPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            labelColor: Colors.green,
+            // indicator: CircleTabIndicator(color: Colors.green, radius: 4),
+            tabs: const [
+              Tab(
+                text: ('Shopping'),
+              ),
+              Tab(
+                text: ('Deliveries'),
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  content(),
+                  receivingTab(tabController: _tabController),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  content(),
+                  receivingTab(tabController: _tabController),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
