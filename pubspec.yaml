@@ -52,6 +52,8 @@ dependencies:
   fluttertoast: ^8.1.2
   barcode_widget: ^2.0.3
   url_launcher: ^6.1.7
+  flutter_barcode_scanner: ^2.0.0
+  easy_stepper: ^0.3.0
 
 dev_dependencies:
   flutter_test:

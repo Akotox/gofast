@@ -16,7 +16,7 @@ class OutProcessing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
+        padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 20),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                     stream: _processingStream,

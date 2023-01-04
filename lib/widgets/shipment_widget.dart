@@ -9,6 +9,8 @@ import 'package:gofast/global/global_variables.dart';
 import 'package:gofast/screens/shipment_details.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:easy_stepper/easy_stepper.dart';
+
 
 class ShipmentWidget extends StatefulWidget {
   final String shipmentId;
@@ -20,7 +22,7 @@ class ShipmentWidget extends StatefulWidget {
   final String sendBy;
   final String weight;
   // final String postedDate;
-  final double progress;
+  final int progress;
   final bool pickup;
   final bool intransit;
   final bool delivered;
@@ -56,9 +58,11 @@ class ShipmentWidget extends StatefulWidget {
 
 class _ShipmentWidgetState extends State<ShipmentWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+    
 
   @override
   Widget build(BuildContext context) {
+    int activeStep = widget.progress;
     var updateTime = DateFormat.yMMMd()
         .format(DateTime.fromMicrosecondsSinceEpoch(widget.createdAt));
     var _today = DateFormat.yMMMd().format(DateTime.fromMicrosecondsSinceEpoch(
@@ -76,7 +80,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
       child: InkWell(
         onLongPress: () {
           widget.pickup == false ? _deleteDialog() : () {};
@@ -95,12 +99,12 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
         child: Stack(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.19,
+              height: MediaQuery.of(context).size.height * 0.21,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 image: const DecorationImage(
-                    image: AssetImage("assets/images/bg.png"),
+                    image: AssetImage("assets/images/dbg.jpg"),
                     fit: BoxFit.cover,
                     opacity: 0.5),
                 color: widget.destinationNumber == phoneNumber
@@ -131,122 +135,79 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                       ),
                     ],
                   ),
+                  EasyStepper(
+                  alignment: Alignment.center,
+                  activeStep: activeStep,
+                  enableStepTapping: false,
+                  showTitle: true,
+                  disableScroll: true,
+                  lineLength: 45,
+                  lineDotRadius: 1,
+                  lineSpace: 3,
+                  stepRadius: 20,
+                  unreachedStepIconColor: Colors.black38,
+                  unreachedStepBorderColor: Colors.black38,
+                  unreachedStepTextColor: Colors.black38,
+                  finishedStepBackgroundColor: Theme.of(context).iconTheme.color,
+                  finishedStepBorderColor: Theme.of(context).iconTheme.color,
+                  finishedStepTextColor: Theme.of(context).iconTheme.color,
+                  activeStepBorderColor: Theme.of(context).iconTheme.color,
+
+                  lineColor:Theme.of(context).iconTheme.color ,
+                  padding: 8,
+                  steps: const [
+                    EasyStep(
+                      icon: Icon(MaterialCommunityIcons.bike_fast),
+                      activeIcon: Icon(MaterialCommunityIcons.cached),
+                      finishIcon: Icon(Icons.check_circle),
+                      title: 'Processing',
+                      // lineText: '1.7 KM',
+                    ),
+                    EasyStep(
+                      icon: Icon(CupertinoIcons.cube_box),
+                      finishIcon: Icon(Icons.check_circle),
+                      title: 'Dispatch',
+                      // lineText: '3 KM',
+                    ),
+                    EasyStep(
+                      icon: Icon(MaterialCommunityIcons.bike_fast),
+                      finishIcon: Icon(Icons.check_circle),
+                      title: 'In-transit',
+                    ),
+                    EasyStep(
+                      icon: Icon(MaterialIcons.location_history),
+                      finishIcon: Icon(Icons.check_circle),
+                      title: 'Drop Off',
+                    ),
+                  ],
+                  onStepReached: (index) => setState(() => activeStep = index),
+                                ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                     Row(
                         children: [
-                          widget.pickup == false
-                              ? Row(
-                                  children: [
-                                    Text(
-                                      'Processing',
-                                      style:
-                                          Theme.of(context).textTheme.headline5,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const Icon(
-                                      Icons.cached,
-                                      size: 10,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
-                          widget.pickup == true && widget.accepted == true
-                              ? Row(
-                                  children: [
-                                    Text(
-                                      'Accepted',
-                                      style:
-                                          Theme.of(context).textTheme.headline5,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const Icon(
-                                      Icons.check_circle,
-                                      size: 10,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
+                          const Icon(
+                            AntDesign.clockcircleo,
+                            size: 10,
+                            
+                          ),
                           const SizedBox(
                             width: 5,
                           ),
-                          widget.pickup == true &&
-                                  widget.accepted == true &&
-                                  widget.intransit == true
-                              ? Row(
-                                  children: [
-                                    Text(
-                                      'In-transit',
-                                      style:
-                                          Theme.of(context).textTheme.headline5,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const Icon(
-                                      Icons.check_circle,
-                                      size: 10,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
-                          const SizedBox(
-                            width: 5,
+                          Text(
+                            "Last updated : $lastUpdateTime",
+                            style: Theme.of(context).textTheme.headline6,
                           ),
-                          widget.pickup == true &&
-                                  widget.accepted == true &&
-                                  widget.intransit == true &&
-                                  widget.delivered == true
-                              ? Row(
-                                  children: [
-                                    Text(
-                                      'Delivered',
-                                      style:
-                                          Theme.of(context).textTheme.headline5,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    const Icon(
-                                      Icons.check_circle,
-                                      size: 10,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
                         ],
                       ),
                       const SizedBox(
-                        height: 3,
-                      ),
-                      Text(
-                        "Last updated : $lastUpdateTime",
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                      const SizedBox(
-                        height: 12,
+                        height: 4,
                       ),
                       Row(
                         children: [
                           const Icon(
-                            Icons.location_on_outlined,
+                            MaterialIcons.location_history,
                             size: 10,
                             
                           ),
@@ -265,7 +226,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                       Row(
                         children: [
                           const Icon(
-                            Icons.location_on_outlined,
+                            MaterialIcons.location_history,
                             size: 10,
                           ),
                           const SizedBox(
@@ -277,76 +238,27 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 4,
-                      ),
-                      SizedBox(
-                        height: 5,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: LinearProgressIndicator(
-                            value: widget.progress,
-                            color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-                            backgroundColor: Colors.grey.shade400,
-                          ),
-                        ),
-                      ),
+                      
                     ],
                   ),
-                  SizedBox(
-                    height: 30,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ShipmentDetailsScreen(
-                                          pickupAd: widget.pickupAd,
-                                          shipmentId: widget.shipmentId,
-                                          destination: widget.destination,
-                                          weight: widget.weight,
-                                        )));
-                          },
-                          child: Row(
-                            children: [
-                              Text('Details',
-                                  style: Theme.of(context).textTheme.bodyText2),
-                              const Icon(
-                                Icons.arrow_forward_ios,
-                                size: 10,
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  
                 ],
               ),
             ),
             widget.sendBy == _auth.currentUser!.uid
                 ? const Positioned(
                     right: 10,
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Icon(
-                        MaterialCommunityIcons.cube_send
-                      ),
+                    top:5,
+                    child: Icon(
+                      MaterialCommunityIcons.cube_send
                     ))
                 : const SizedBox.shrink(),
             widget.destinationNumber == phoneNumber
                 ? const Positioned(
                     right: 10,
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: Icon(MaterialCommunityIcons.cube_send,
-                          color: Colors.black),
-                    ))
+                    bottom: 5,
+                    child: Icon(MaterialCommunityIcons.truck_fast_outline,
+                         size: 20,))
                 : const SizedBox.shrink()
           ],
         ),
@@ -357,18 +269,25 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
   _deleteDialog() {
     User? user = _auth.currentUser;
     final uid = user!.uid;
-    showDialog(
-        context: context,
-        builder: (ctx) {
-          return Dialog(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
+    showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    barrierColor: Colors.transparent,
+                    context: context,
+                    builder: (context) {
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 58),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(19),
+                              image: const DecorationImage(
+                                image: AssetImage("assets/images/bg.png"),
+                                fit: BoxFit.cover,
+                                opacity: 0.3),
+                              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                               const SizedBox(
                   height: 20,
                 ),
                 Padding(
@@ -376,31 +295,31 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.warning_outlined,
-                        size: 28,
-                        color: Colors.yellow,
+                       Icon(
+                        AntDesign.delete,
+                        size: 30,
+                        color: Colors.grey.shade400,
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       Text(
-                        'Do you want to delete?'.toUpperCase(),
-                        style: textStyle(22, Colors.black, FontWeight.w500),
+                        'Deleting this parcel can not be reverted.\nDo you want to proceed?',
+                        style: Theme.of(context).textTheme.bodyText1,
                       )
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                // const SizedBox(
+                //   height: 10,
+                // ),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       MaterialButton(
-                        color: Colors.red,
+                        // color: Colors.white,
                         onPressed: () async {
                           try {
                             if (widget.sendBy == uid) {
@@ -414,12 +333,8 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                                 backgroundColor: Colors.white54,
                                 fontSize: 16,
                               );
-                              Navigator.canPop(ctx) ? Navigator.pop(ctx) : null;
-                            } else {
-                              GlobalMethod.showErrorDialog(
-                                  error: 'You cannot perform this action',
-                                  ctx: ctx);
-                            }
+                              // Navigator.canPop(ctx) ? Navigator.pop(ctx) : null;
+                            } 
                           } catch (error) {
                             GlobalMethod.showErrorDialog(
                                 error: 'This job can\'t be deleted',
@@ -429,7 +344,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                         shape: RoundedRectangleBorder(
                           side: const BorderSide(
                             width: 2,
-                            color: Colors.red,
+                            color: Colors.white,
                           ),
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -444,14 +359,14 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                         width: 20,
                       ),
                       MaterialButton(
-                        color: Colors.green,
+                        // color: Colors.green,
                         onPressed: () {
                           Navigator.pop(context);
                         },
                         shape: RoundedRectangleBorder(
                           side: const BorderSide(
                             width: 2,
-                            color: Colors.green,
+                            color: Colors.black,
                           ),
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -462,9 +377,11 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                     ],
                   ),
                 )
-              ],
-            ),
-          );
-        });
+              
+                            ],
+                          ),
+                        ),
+                      );
+                    });
   }
 }

@@ -81,6 +81,10 @@ class GoFastaAppTheme {
           fontWeight: FontWeight.bold,
         ),
       ),
+      listTileTheme: ListTileThemeData(
+        visualDensity: VisualDensity.compact,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16)
+      )
     );
   }
 }

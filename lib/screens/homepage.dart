@@ -2,14 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/exports/exported_widgets.dart';
 import 'package:gofast/global/global_variables.dart';
-import 'package:gofast/widgets/shipments/in_delivered.dart';
-import 'package:gofast/widgets/shipments/in_dispatch.dart';
-import 'package:gofast/widgets/shipments/in_processing.dart';
-import 'package:gofast/widgets/shipments/in_transit.dart';
-import 'package:gofast/widgets/shipments/out_dispatch.dart';
-import 'package:gofast/widgets/shipments/out_processing.dart';
-import 'package:gofast/widgets/shipments/out_transit.dart';
+import 'package:gofast/screens/auth/login.dart';
 import 'package:lottie/lottie.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,7 +23,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   String? category;
   final FirebaseAuth auth = FirebaseAuth.instance;
-
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> _processingStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _processingReceiverStream;
@@ -138,6 +133,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         phoneNumber = userDoc.get('phoneNumber');
         location = userDoc.get('Address');
         name = userDoc.get('name');
+        userImage = userDoc.get("userImage");
+        email = userDoc.get("email");
       });
     }
   }
@@ -160,27 +157,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             labelStyle: Theme.of(context).textTheme.headline4,
             indicatorColor: Colors.transparent,
             // indicator: CircleTabIndicator(color: Colors.green, radius: 4),
-            tabs:  [
+            tabs: [
               Tab(
-                child:Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Icon(MaterialCommunityIcons.bike_fast),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text("Incoming Parcels"),
                   ],
                 ),
               ),
               Tab(
-                child:Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Icon(MaterialCommunityIcons.cube_send),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Text("OutGoing Parcels"),
                   ],
                 ),
-                
               ),
             ],
           ),
@@ -192,198 +192,209 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 children: [
                   incomingContent(),
                   Padding(
-            padding: const EdgeInsets.fromLTRB(8, 15, 8, 8),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(19),
-                  gradient: LinearGradient(
-                    colors:  [
-                      const Color(0xFFFFFFFF).withOpacity(0.5),
-                      const Color(0xFF03608F).withOpacity(0.5)
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  )),
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 40,
+                    padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.59,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Colors.grey[300]),
-                      child: TabBar(
-                          controller: _tabController,
-                          indicator: BoxDecoration(
-                            color: const Color(0xFF03608F),
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          labelColor: Colors.white,
-                          labelStyle: Theme.of(context).textTheme.headline4,
-                          unselectedLabelColor: Colors.grey.withOpacity(0.7),
-                          tabs: const [
-                            Tab(
-                              text: "Processing",
+                          borderRadius: BorderRadius.circular(19),
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFFFFFFFF).withOpacity(0.5),
+                              const Color(0xFF03608F).withOpacity(0.5)
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          )),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: Colors.grey[300]),
+                              child: TabBar(
+                                  controller: _tabController,
+                                  indicator: BoxDecoration(
+                                    color: const Color(0xFF03608F),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  labelColor: Colors.white,
+                                  labelStyle:
+                                      Theme.of(context).textTheme.headline4,
+                                  unselectedLabelColor:
+                                      Colors.grey.withOpacity(0.7),
+                                  tabs: const [
+                                    Tab(
+                                      text: "Processing",
+                                    ),
+                                    Tab(
+                                      text: "Dispatch",
+                                    ),
+                                    Tab(
+                                      text: "Intransit",
+                                    ),
+                                    Tab(
+                                      text: "Delivered",
+                                    )
+                                  ]),
                             ),
-                            Tab(
-                              text: "Dispatch",
-                            ),
-                            Tab(
-                              text: "Intransit",
-                            ),
-                            Tab(
-                              text: "Delivered",
+                            Expanded(
+                              child: TabBarView(
+                                  controller: _tabController,
+                                  children: [
+                                    // Processing
+                                    Column(
+                                      children: [
+                                        Processing(
+                                            processingReceiverStream:
+                                                _processingReceiverStream),
+                                      ],
+                                    ),
+
+                                    // Dispatch
+                                    Column(
+                                      children: [
+                                        OutDispatch(pickStream: _pickStream),
+                                      ],
+                                    ),
+
+                                    // Transit
+
+                                    Column(
+                                      children: [
+                                        Transit(
+                                            intransitStream: _intransitStream),
+                                      ],
+                                    ),
+
+                                    // Delivered
+
+                                    Column(
+                                      children: [
+                                        Delivered(
+                                            deliveryStream: _deliveryStream),
+                                      ],
+                                    ),
+                                  ]),
                             )
-                          ]),
+                          ],
+                        ),
+                      ),
                     ),
-              Expanded(
-                child: TabBarView(controller: _tabController, children: [
-
-                  // Processing
-                  Column(
-                    children: [
-                      Processing(processingReceiverStream: _processingReceiverStream),
-                    ],
-                  ),
-
-
-                  // Dispatch
-                  Column(
-                    children: [
-                      OutDispatch(pickStream: _pickStream),
-                    ],
-                  ),
-
-                  // Transit
-
-                  Column(
-                    children: [
-                      Transit(intransitStream: _intransitStream),
-                    ],
-                  ),
-
-                  // Delivered
-
-                  Column(
-                    children: [
-                      Delivered(deliveryStream: _deliveryStream),
-                    ],
-                  ),
-                ]),
-              )
-            ],
-          ),
-        ),
-      ),
-    )
+                  )
                 ],
               ),
             ),
-            
             SingleChildScrollView(
               child: Column(
                 children: [
                   outGoingContent(),
                   Padding(
-            padding: const EdgeInsets.fromLTRB(8, 15, 8, 8),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.6,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(19),
-                  gradient: LinearGradient(
-                    colors:  [
-                      const Color(0xFFFFFFFF).withOpacity(0.5),
-                      const Color(0xFF03608F).withOpacity(0.5)
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  )),
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 40,
+                    padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.6,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Colors.grey[300]),
-                      child: TabBar(
-                          controller: _tabController,
-                          indicator: BoxDecoration(
-                            color: const Color(0xFF03608F),
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          labelColor: Colors.white,
-                          labelStyle: Theme.of(context).textTheme.headline4,
-                          unselectedLabelColor: Colors.grey.withOpacity(0.7),
-                          tabs: const [
-                            Tab(
-                              text: "Processing",
+                          borderRadius: BorderRadius.circular(19),
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFFFFFFFF).withOpacity(0.5),
+                              const Color(0xFF03608F).withOpacity(0.5)
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          )),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: Colors.grey[300]),
+                              child: TabBar(
+                                  controller: _tabController,
+                                  indicator: BoxDecoration(
+                                    color: const Color(0xFF03608F),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  labelColor: Colors.white,
+                                  labelStyle:
+                                      Theme.of(context).textTheme.headline4,
+                                  unselectedLabelColor:
+                                      Colors.grey.withOpacity(0.7),
+                                  tabs: const [
+                                    Tab(
+                                      text: "Processing",
+                                    ),
+                                    Tab(
+                                      text: "Dispatch",
+                                    ),
+                                    Tab(
+                                      text: "Intransit",
+                                    ),
+                                    Tab(
+                                      text: "Delivered",
+                                    )
+                                  ]),
                             ),
-                            Tab(
-                              text: "Dispatch",
-                            ),
-                            Tab(
-                              text: "Intransit",
-                            ),
-                            Tab(
-                              text: "Delivered",
+                            Expanded(
+                              child: TabBarView(
+                                  controller: _tabController,
+                                  children: [
+                                    // Processing
+                                    Column(
+                                      children: [
+                                        OutProcessing(
+                                            processingStream:
+                                                _processingStream),
+                                      ],
+                                    ),
+
+                                    // Dispatch
+                                    Column(
+                                      children: [
+                                        Dispatch(pickedStream: _pickedStream),
+                                      ],
+                                    ),
+
+                                    // Transit
+
+                                    Column(
+                                      children: [
+                                        OutTransit(
+                                            intransitDeliveryStream:
+                                                _intransitDeliveryStream),
+                                      ],
+                                    ),
+
+                                    // Delivered
+
+                                    Column(
+                                      children: [
+                                        Delivered(
+                                            deliveryStream: _deliveryStream),
+                                      ],
+                                    ),
+                                  ]),
                             )
-                          ]),
+                          ],
+                        ),
+                      ),
                     ),
-              Expanded(
-                child: TabBarView(controller: _tabController, children: [
-
-                  // Processing
-                  Column(
-                    children: [
-                      OutProcessing(processingStream: _processingStream),
-                    ],
-                  ),
-
-
-                  // Dispatch
-                  Column(
-                    children: [
-                      Dispatch(pickedStream: _pickedStream),
-                    ],
-                  ),
-
-                  // Transit
-
-                  Column(
-                    children: [
-                      OutTransit(intransitDeliveryStream: _intransitDeliveryStream),
-                    ],
-                  ),
-
-                  // Delivered
-
-                  Column(
-                    children: [
-                      Delivered(deliveryStream: _deliveryStream),
-                    ],
-                  ),
-                ]),
-              )
-            ],
-          ),
-        ),
-      ),
-    )
+                  )
                 ],
               ),
             ),
-            
           ],
         ),
       ),
     );
   }
 
-Widget outGoingContent() {
+  Widget outGoingContent() {
     return Container(
       height: 200,
       decoration: BoxDecoration(
@@ -419,108 +430,14 @@ Widget outGoingContent() {
                   ),
                 ],
               ),
+              search(),
               const SizedBox(
                 height: 10,
-              ),
-              SizedBox(
-                height: 50,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 49,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Theme.of(context).backgroundColor,
-                        ),
-                        child: TextField(
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              AntDesign.search1,
-                              color: Color(0xFF03608F),
-                            ),
-                            hintText:
-                                "Search Using Parcel Number or Scan the QRCode",
-                            hintStyle: Theme.of(context).textTheme.headline6,
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        width: 50,
-                        height: 49,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Theme.of(context).backgroundColor,
-                        ),
-                        child: const Icon(MaterialCommunityIcons.qrcode_scan),
-                      ),
-                    )
-                  ],
-                ),
               ),
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                      color: Color(0xFFFFFFFF).withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(25)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(MaterialCommunityIcons.cube_send),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Send Parcel'.toUpperCase(),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Icon(
-                              MaterialCommunityIcons.barcode,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Collection ID'.toUpperCase(),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Icon(MaterialCommunityIcons.truck_fast_outline),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Pick Up Parcel'.toUpperCase(),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )),
+              tools()
             ],
           ),
         ),
@@ -528,6 +445,73 @@ Widget outGoingContent() {
     );
   }
 
+  Widget tools() {
+    return Container(
+        height: 40,
+        decoration: BoxDecoration(
+            color: Color(0xFFFFFFFF).withOpacity(0.7),
+            borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 8, 16, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(MaterialCommunityIcons.cube_send),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'Send Parcel'.toUpperCase(),
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                ],
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      MaterialCommunityIcons.barcode_scan,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      'Identification Code'.toUpperCase(),
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ],
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const DeliveryBoy()));
+                },
+                child: Row(
+                  children: [
+                    const Icon(MaterialCommunityIcons.warehouse),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      'Warehouses'.toUpperCase(),
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
+  }
 
   Widget incomingContent() {
     return Container(
@@ -568,241 +552,63 @@ Widget outGoingContent() {
               const SizedBox(
                 height: 10,
               ),
-              SizedBox(
-                height: 50,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 49,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Theme.of(context).backgroundColor,
-                        ),
-                        child: TextField(
-                          readOnly: true,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              AntDesign.search1,
-                              color: Color(0xFF03608F),
-                            ),
-                            hintText:
-                                "Search Using Parcel Number or Scan the QRCode",
-                            hintStyle: Theme.of(context).textTheme.headline6,
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        width: 50,
-                        height: 49,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
-                          color: Theme.of(context).backgroundColor,
-                        ),
-                        child: const Icon(MaterialCommunityIcons.qrcode_scan),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(
+             search(),
+             const SizedBox(
                 height: 20,
               ),
-              Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                      color: Color(0xFFFFFFFF).withOpacity(0.7),
-                      borderRadius: BorderRadius.circular(25)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(MaterialCommunityIcons.cube_send),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Send Parcel'.toUpperCase(),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Icon(
-                              MaterialCommunityIcons.barcode,
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Collection ID'.toUpperCase(),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Icon(MaterialCommunityIcons.truck_fast_outline),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Pick Up Parcel'.toUpperCase(),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )),
+              tools()
             ],
           ),
         ),
       ),
     );
   }
-}
 
-
-
-
-
-
-
-
-
-
-
-class outGoingTab extends StatelessWidget {
-  const outGoingTab({
-    Key? key,
-    required TabController tabController,
-  })  : _tabController = tabController,
-        super(key: key);
-
-  final TabController _tabController;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(8, 15, 8, 8),
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(19),
-            gradient: LinearGradient(
-              colors: [
-                Color(0xFFFFFFFF).withOpacity(0.5),
-                Color(0xFF03608F).withOpacity(0.5)
-              ],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            )),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    color: Colors.grey[300]),
-                child: TabBar(
-                    controller: _tabController,
-                    indicator: BoxDecoration(
-                      color: Color(0xFF03608F),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    labelColor: Colors.white,
-                    labelStyle: Theme.of(context).textTheme.headline4,
-                    unselectedLabelColor: Colors.grey.withOpacity(0.7),
-                    tabs: const [
-                      Tab(
-                        text: "Dispatch",
-                      ),
-                      Tab(
-                        text: "Picked",
-                      ),
-                      Tab(
-                        text: "Intransit",
-                      ),
-                      Tab(
-                        text: "Delivered",
-                      )
-                    ]),
+  Widget search() {
+    return SizedBox(
+      height: 50,
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 49,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: Theme.of(context).backgroundColor,
               ),
-              Expanded(
-                child: TabBarView(controller: _tabController, children: [
-                  Column(
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(12.0, 10, 20, 10),
-                          child: Container(
-                            child: Text("Welcome"),
-                          )),
-                    ],
+              child: TextField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(
+                    AntDesign.search1,
+                    color: Color(0xFF03608F),
                   ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12.0, 10, 12, 10),
-                        child: Text(
-                          "widget.content",
-                          style: Theme.of(context).textTheme.headline4,
-                          maxLines: 20,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12.0, 10, 12, 10),
-                        child: Text(
-                          "widget.content",
-                          style: Theme.of(context).textTheme.headline4,
-                          maxLines: 20,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(12.0, 10, 12, 10),
-                        child: Text(
-                          "widget.content",
-                          style: Theme.of(context).textTheme.headline4,
-                          maxLines: 20,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.justify,
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-              )
-            ],
+                  hintText: "Search Using Parcel Number or Scan the QRCode",
+                  hintStyle: Theme.of(context).textTheme.headline6,
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
           ),
-        ),
+          const SizedBox(
+            width: 8,
+          ),
+          InkWell(
+            onTap: () {},
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              width: 50,
+              height: 49,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25),
+                color: Theme.of(context).backgroundColor,
+              ),
+              child: const Icon(MaterialCommunityIcons.qrcode_scan),
+            ),
+          )
+        ],
       ),
     );
+    ;
   }
 }
-

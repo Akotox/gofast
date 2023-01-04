@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -101,16 +102,17 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
     }
   }
 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).iconTheme.color,
       appBar: AppBar(
-        iconTheme: Theme.of(context).iconTheme,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Theme.of(context).iconTheme.color,
         elevation: 0,
         leading: IconButton(
             icon: const Icon(
-              Icons.arrow_back_ios,
+              AntDesign.leftcircleo,
             ),
             onPressed: () {
               Navigator.pop(context);
@@ -130,8 +132,8 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    gradient: const LinearGradient(
-                        colors: [Colors.green, Colors.blue]),
+                    gradient: LinearGradient(
+                        colors: [Colors.white, Color(0xFF03608F)]),
                   ),
                   child: Column(
                     children: [
@@ -170,11 +172,15 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 4.0, left: 4, top: 35),
-                  child: Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
+                  padding: const EdgeInsets.only(right: 8.0, left: 8, top: 35),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white38,
                       borderRadius: BorderRadius.circular(20),
+                      image: const DecorationImage(
+                          image: AssetImage("assets/images/bg.png"),
+                          fit: BoxFit.cover,
+                          opacity: 0.54),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
@@ -192,9 +198,8 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                 Row(
                                   children: [
                                     const Icon(
-                                      Icons.location_on_outlined,
-                                      size: 12,
-                                      color: Colors.grey,
+                                      MaterialIcons.location_history,
+                                      size: 13,
                                     ),
                                     const SizedBox(
                                       width: 5,
@@ -202,18 +207,25 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                     Text(
                                       'Origin :',
                                       style: textStyle(
-                                          10, Colors.grey, FontWeight.w500),
+                                          10, Colors.black, FontWeight.w800),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(
                                   height: 3,
                                 ),
-                                Text(
-                                  pickupAd == null ? '' : pickupAd!,
-                                  textAlign: TextAlign.justify,
-                                  style: textStyle(
-                                      10, Colors.white, FontWeight.w500),
+                                Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 18,
+                                    ),
+                                    Text(
+                                      pickupAd == null ? '' : pickupAd!,
+                                      textAlign: TextAlign.justify,
+                                      style: textStyle(
+                                          10, Colors.black87, FontWeight.w500),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 10,
@@ -223,7 +235,6 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                     const Icon(
                                       Icons.whatsapp_outlined,
                                       size: 12,
-                                      color: Colors.grey,
                                     ),
                                     const SizedBox(
                                       width: 5,
@@ -231,7 +242,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                     Text(
                                       'Contact Sender :',
                                       style: textStyle(
-                                          10, Colors.grey, FontWeight.w500),
+                                          10, Colors.black, FontWeight.w800),
                                     ),
                                   ],
                                 ),
@@ -246,11 +257,20 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                   //   });
                                   //   _launchWhatsapp();
                                   // }: (){},
-                                  child: Text(
-                                    pickupNumber == null ? '' : pickupNumber!,
-                                    textAlign: TextAlign.justify,
-                                    style: textStyle(
-                                        10, Colors.white, FontWeight.w500),
+                                  child: Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: 18,
+                                      ),
+                                      Text(
+                                        pickupNumber == null
+                                            ? ''
+                                            : pickupNumber!,
+                                        textAlign: TextAlign.justify,
+                                        style: textStyle(10, Colors.black87,
+                                            FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 const SizedBox(
@@ -268,18 +288,25 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                     Text(
                                       'Destination :',
                                       style: textStyle(
-                                          10, Colors.grey, FontWeight.w500),
+                                          10, Colors.black, FontWeight.w800),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(
                                   height: 3,
                                 ),
-                                Text(
-                                  destination == null ? '' : destination!,
-                                  textAlign: TextAlign.justify,
-                                  style: textStyle(
-                                      10, Colors.white, FontWeight.w500),
+                                Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 18,
+                                    ),
+                                    Text(
+                                      destination == null ? '' : destination!,
+                                      textAlign: TextAlign.justify,
+                                      style: textStyle(
+                                          10, Colors.black87, FontWeight.w500),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(
                                   height: 10,
@@ -296,7 +323,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                     Text(
                                       'Contact Recever:',
                                       style: textStyle(
-                                          10, Colors.grey, FontWeight.w500),
+                                          10, Colors.black, FontWeight.w800),
                                     ),
                                   ],
                                 ),
@@ -311,13 +338,20 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                   //   });
                                   //   _launchWhatsapp();
                                   // }: (){},
-                                  child: Text(
-                                    destinationNumber == null
-                                        ? ''
-                                        : destinationNumber!,
-                                    textAlign: TextAlign.justify,
-                                    style: textStyle(
-                                        10, Colors.white, FontWeight.w500),
+                                  child: Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: 18,
+                                      ),
+                                      Text(
+                                        destinationNumber == null
+                                            ? ''
+                                            : destinationNumber!,
+                                        textAlign: TextAlign.justify,
+                                        style: textStyle(10, Colors.black87,
+                                            FontWeight.w500),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 const SizedBox(
@@ -348,381 +382,337 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                 ),
               ],
             ),
-            Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Stack(
-                  clipBehavior: Clip.none,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(8),
+                  height: MediaQuery.of(context).size.height * 0.41,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: const LinearGradient(
+                        colors: [Colors.white, Color(0xFF03608F)]),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.all(4),
-                      height: MediaQuery.of(context).size.height * 0.17,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const LinearGradient(
-                            colors: [Colors.green, Colors.blue]),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Delivery Status',
+                              style: Theme.of(context).textTheme.headline4),
+                          accepted == true
+                              ? IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      whatsappNo = courierNumber!;
+                                      message =
+                                          'What\'s the delivery status of parcel $shipmentId?';
+                                    });
+                                    _launchWhatsapp();
+                                  },
+                                  icon: const Icon(Icons.whatsapp_outlined,
+                                      color: Colors.white))
+                              : const Icon(
+                                  CupertinoIcons.phone_circle,
+                                  color: Colors.grey,
+                                )
+                        ],
                       ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 14, 12, 0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Delivery Status',
-                                  style: Theme.of(context).textTheme.headline4),
-                              accepted == true
-                                  ? IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          whatsappNo = courierNumber!;
-                                          message =
-                                              'What\'s the delivery status of parcel $shipmentId?';
-                                        });
-                                        _launchWhatsapp();
-                                      },
-                                      icon: const Icon(Icons.whatsapp_outlined,
-                                          color: Colors.white))
-                                  : const Icon(
-                                      CupertinoIcons.phone_circle,
-                                      color: Colors.grey,
-                                    )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Card(
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.36,
-                            width: MediaQuery.of(context).size.width,
-                            child: Stack(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                                    child: Column(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(6, 18, 6, 6),
-                                          child: Icon(CupertinoIcons
-                                              .check_mark_circled_solid),
-                                        ),
-                                        Container(
-                                          width: 1,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.045,
-                                          color: Colors.white,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(
-                                              CupertinoIcons.location_solid,
-                                              color: pickup != true
-                                                  ? Colors.grey
-                                                  : Colors.green),
-                                        ),
-                                        Container(
-                                          width: 1,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.045,
-                                          color: Colors.white,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(
-                                              CupertinoIcons.car_detailed,
-                                              color: intransit != true
-                                                  ? Colors.grey
-                                                  : Colors.green),
-                                        ),
-                                        Container(
-                                          width: 1,
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.045,
-                                          color: Colors.white,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Icon(
-                                            delivered != true
-                                                ? CupertinoIcons.location_solid
-                                                : CupertinoIcons
-                                                    .check_mark_circled_solid,
-                                            color: delivered != true
-                                                ? Colors.grey
-                                                : Colors.green,
-                                          ),
-                                        ),
-                                      ],
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      height: MediaQuery.of(context).size.height * 0.36,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.black26),
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                              child: Column(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.fromLTRB(6, 18, 6, 6),
+                                    child: Icon(CupertinoIcons
+                                        .check_mark_circled_solid),
+                                  ),
+                                  Container(
+                                    width: 1,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.045,
+                                    color: Colors.white,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(MaterialIcons.location_history,
+                                        color: pickup != true
+                                            ? Colors.grey
+                                            : Colors.green),
+                                  ),
+                                  Container(
+                                    width: 1,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.045,
+                                    color: Colors.white,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(CupertinoIcons.car_detailed,
+                                        color: intransit != true
+                                            ? Colors.grey
+                                            : Colors.green),
+                                  ),
+                                  Container(
+                                    width: 1,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.045,
+                                    color: Colors.white,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(
+                                      delivered != true
+                                          ? CupertinoIcons.location_solid
+                                          : CupertinoIcons
+                                              .check_mark_circled_solid,
+                                      color: delivered != true
+                                          ? Colors.grey
+                                          : Colors.green,
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  left: 50,
-                                  top: 10,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            left: 50,
+                            top: 10,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                  'Processing  ${postedDate == null ? '' : postedDate!}',
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.normal)),
-                                              Text(
-                                                  pickupAd == null
-                                                      ? ''
-                                                      : pickupAd!,
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.w600)),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.05,
-                                          color: Colors.white,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                  'Picked up ${pickedDate ?? ''}',
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.normal)),
-                                              Text(
-                                                  pickupAd == null
-                                                      ? ''
-                                                      : pickupAd!,
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.w600)),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.045,
-                                          color: Colors.white,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                  'Start transporting at ${transitDate ?? ''}',
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.normal)),
-                                              Text(
-                                                  'The parcel arrives in ${intransit_time == null ? 'within the given time' : intransit_time!}',
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.w600)),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.042,
-                                          color: Colors.white,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(6.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  'Delivered ${deliveredDate ?? ''}',
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.normal)),
-                                              Text(
-                                                  destination == null
-                                                      ? ''
-                                                      : destination!,
-                                                  style: textStyle(
-                                                      10,
-                                                      Colors.white,
-                                                      FontWeight.w600)),
-                                            ],
-                                          ),
-                                        ),
+                                        Text(
+                                            'Processing  ${postedDate == null ? '' : postedDate!}',
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.normal)),
+                                        Text(pickupAd == null ? '' : pickupAd!,
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.w600)),
                                       ],
                                     ),
                                   ),
-                                ),
-                                // courierId != _auth.currentUser!.uid ||
-                                //         courierId == null
-                                //     ? Container()
-                                //     : Positioned(
-                                //         right: 20,
-                                //         top: 0,
-                                //         child: Align(
-                                //           alignment: Alignment.centerLeft,
-                                //           child: Column(
-                                //             children: [
-                                //               Padding(
-                                //                 padding:
-                                //                     const EdgeInsets.all(6.0),
-                                //                 child: IconButton(
-                                //                     onPressed: () {},
-                                //                     icon: const Icon(CupertinoIcons
-                                //                         .check_mark_circled_solid)),
-                                //               ),
-                                //               Container(
-                                //                 width: 1,
-                                //                 height: MediaQuery.of(context)
-                                //                         .size
-                                //                         .height *
-                                //                     0.015,
-                                //                 color: Colors.white,
-                                //               ),
-                                //               Padding(
-                                //                 padding:
-                                //                     const EdgeInsets.all(6.0),
-                                //                 child: IconButton(
-                                //                     onPressed: () {},
-                                //                     icon: Icon(
-                                //                       CupertinoIcons
-                                //                           .location_solid,
-                                //                       color: pickup != true
-                                //                           ? Colors.grey
-                                //                           : Colors.green,
-                                //                     )),
-                                //               ),
-                                //               Container(
-                                //                 width: 1,
-                                //                 height: MediaQuery.of(context)
-                                //                         .size
-                                //                         .height *
-                                //                     0.015,
-                                //                 color: Colors.white,
-                                //               ),
-                                //               Padding(
-                                //                 padding:
-                                //                     const EdgeInsets.all(6.0),
-                                //                 child: IconButton(
-                                //                     onPressed: () {
-                                //                       intransit != true
-                                //                           ? _updateTransitTime()
-                                //                           : () {};
-                                //                     },
-                                //                     icon: Icon(
-                                //                       intransit == true
-                                //                           ? CupertinoIcons
-                                //                               .check_mark_circled_solid
-                                //                           : CupertinoIcons
-                                //                               .car_detailed,
-                                //                       color: intransit != true
-                                //                           ? Colors.grey
-                                //                           : Colors.green,
-                                //                     )),
-                                //               ),
-                                //               Container(
-                                //                 width: 1,
-                                //                 height: MediaQuery.of(context)
-                                //                         .size
-                                //                         .height *
-                                //                     0.015,
-                                //                 color: Colors.white,
-                                //               ),
-                                //               Padding(
-                                //                 padding:
-                                //                     const EdgeInsets.all(6.0),
-                                //                 child: IconButton(
-                                //                     onPressed: () {
-                                //                       intransit == true ||
-                                //                               pickup == true
-                                //                           ? FirebaseFirestore
-                                //                               .instance
-                                //                               .collection(
-                                //                                   'courier')
-                                //                               .doc(shipmentId)
-                                //                               .update({
-                                //                               'delivered': true,
-                                //                               'deliveredAt':
-                                //                                   DateTime
-                                //                                       .now(),
-                                //                             })
-                                //                           : () {};
-                                //                     },
-                                //                     icon: Icon(
-                                //                       delivered == true
-                                //                           ? CupertinoIcons
-                                //                               .check_mark_circled_solid
-                                //                           : CupertinoIcons
-                                //                               .location_solid,
-                                //                       color: delivered == true
-                                //                           ? Colors.green
-                                //                           : Colors.grey,
-                                //                     )),
-                                //               ),
-                                //             ],
-                                //           ),
-                                //         ),
-                                //       )
-                              ],
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.05,
+                                    color: Colors.white,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('Picked up ${pickedDate ?? ''}',
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.normal)),
+                                        Text(pickupAd == null ? '' : pickupAd!,
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.w600)),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.045,
+                                    color: Colors.white,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                            'Start transporting at ${transitDate ?? ''}',
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.normal)),
+                                        Text(
+                                            'The parcel arrives in ${intransit_time == null ? 'within the given time' : intransit_time!}',
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.w600)),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.042,
+                                    color: Colors.white,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text('Delivered ${deliveredDate ?? ''}',
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.normal)),
+                                        Text(
+                                            destination == null
+                                                ? ''
+                                                : destination!,
+                                            style: textStyle(10, Colors.white,
+                                                FontWeight.w600)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          // courierId != _auth.currentUser!.uid ||
+                          //         courierId == null
+                          //     ? Container()
+                          //     : Positioned(
+                          //         right: 20,
+                          //         top: 0,
+                          //         child: Align(
+                          //           alignment: Alignment.centerLeft,
+                          //           child: Column(
+                          //             children: [
+                          //               Padding(
+                          //                 padding:
+                          //                     const EdgeInsets.all(6.0),
+                          //                 child: IconButton(
+                          //                     onPressed: () {},
+                          //                     icon: const Icon(CupertinoIcons
+                          //                         .check_mark_circled_solid)),
+                          //               ),
+                          //               Container(
+                          //                 width: 1,
+                          //                 height: MediaQuery.of(context)
+                          //                         .size
+                          //                         .height *
+                          //                     0.015,
+                          //                 color: Colors.white,
+                          //               ),
+                          //               Padding(
+                          //                 padding:
+                          //                     const EdgeInsets.all(6.0),
+                          //                 child: IconButton(
+                          //                     onPressed: () {},
+                          //                     icon: Icon(
+                          //                       CupertinoIcons
+                          //                           .location_solid,
+                          //                       color: pickup != true
+                          //                           ? Colors.grey
+                          //                           : Colors.green,
+                          //                     )),
+                          //               ),
+                          //               Container(
+                          //                 width: 1,
+                          //                 height: MediaQuery.of(context)
+                          //                         .size
+                          //                         .height *
+                          //                     0.015,
+                          //                 color: Colors.white,
+                          //               ),
+                          //               Padding(
+                          //                 padding:
+                          //                     const EdgeInsets.all(6.0),
+                          //                 child: IconButton(
+                          //                     onPressed: () {
+                          //                       intransit != true
+                          //                           ? _updateTransitTime()
+                          //                           : () {};
+                          //                     },
+                          //                     icon: Icon(
+                          //                       intransit == true
+                          //                           ? CupertinoIcons
+                          //                               .check_mark_circled_solid
+                          //                           : CupertinoIcons
+                          //                               .car_detailed,
+                          //                       color: intransit != true
+                          //                           ? Colors.grey
+                          //                           : Colors.green,
+                          //                     )),
+                          //               ),
+                          //               Container(
+                          //                 width: 1,
+                          //                 height: MediaQuery.of(context)
+                          //                         .size
+                          //                         .height *
+                          //                     0.015,
+                          //                 color: Colors.white,
+                          //               ),
+                          //               Padding(
+                          //                 padding:
+                          //                     const EdgeInsets.all(6.0),
+                          //                 child: IconButton(
+                          //                     onPressed: () {
+                          //                       intransit == true ||
+                          //                               pickup == true
+                          //                           ? FirebaseFirestore
+                          //                               .instance
+                          //                               .collection(
+                          //                                   'courier')
+                          //                               .doc(shipmentId)
+                          //                               .update({
+                          //                               'delivered': true,
+                          //                               'deliveredAt':
+                          //                                   DateTime
+                          //                                       .now(),
+                          //                             })
+                          //                           : () {};
+                          //                     },
+                          //                     icon: Icon(
+                          //                       delivered == true
+                          //                           ? CupertinoIcons
+                          //                               .check_mark_circled_solid
+                          //                           : CupertinoIcons
+                          //                               .location_solid,
+                          //                       color: delivered == true
+                          //                           ? Colors.green
+                          //                           : Colors.grey,
+                          //                     )),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //       )
+                        ],
+                      ),
                     ),
                   ],
-                )),
+                ),
+              ],
+            ),
           ],
         ),
       ),

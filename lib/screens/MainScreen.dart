@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/screens/profile.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> pageList = <Widget>[
     const HomePage(),
     const HomePage(),
-    const HomePage(),
+    const Profile(),
   ];
 
   @override

@@ -1,11 +1,6 @@
 import 'dart:async';
-
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:async/async.dart' show StreamGroup;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 
 class DeliveryWigdet extends StatefulWidget {
@@ -21,131 +16,9 @@ class _DeliveryWigdetState extends State<DeliveryWigdet> {
   String? category;
   // final FirebaseAuth auth = FirebaseAuth.instance;
 
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _processes;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _picked;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _transit;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _processingStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _processingReceiverStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _pickedStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _pickStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _completedStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _intransitDeliveryStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _intransitStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveredStream;
-  // late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveryStream;
 
   @override
-  // void initState() {
-  //   super.initState();
-
-  //   getMyData();
-  //   _processingStream =
-  //       FirebaseFirestore.instance
-  //       .collection('courier')
-  //       .where('category', isEqualTo: category)
-  //       .where('sendBy', isEqualTo: auth.currentUser!.uid)
-  //       .where('pickup', isEqualTo: false)
-  //       .where('accepted', isEqualTo: false)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots();
-
-  //   _processingReceiverStream =
-  //       FirebaseFirestore.instance
-  //           .collection('courier')
-  //           .where('category', isEqualTo: category)
-  //           .where('destinationNumber', isEqualTo: phoneNumber)
-  //           .where('pickup', isEqualTo: false)
-  //           .where('accepted', isEqualTo: false)
-  //           .orderBy('createdAt', descending: true)
-  //           .snapshots();
-
-  //   _pickedStream = FirebaseFirestore.instance
-  //       .collection('courier')
-  //       .where('category', isEqualTo: category)
-  //       .where('sendBy', isEqualTo: auth.currentUser!.uid)
-  //       .where('pickup', isEqualTo: true)
-  //       .where('accepted', isEqualTo: true)
-  //       .where('intransit', isEqualTo: false)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots();
-
-  //   _pickStream = FirebaseFirestore.instance
-  //       .collection('courier')
-  //       .where('category', isEqualTo: category)
-  //       .where('destinationNumber', isEqualTo: phoneNumber)
-  //       .where('pickup', isEqualTo: true)
-  //       .where('accepted', isEqualTo: true)
-  //       .where('intransit', isEqualTo: false)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots();
-
-  //   _intransitDeliveryStream = FirebaseFirestore.instance
-  //       .collection('courier')
-  //       .where('category', isEqualTo: category)
-  //       .where('sendBy', isEqualTo: auth.currentUser!.uid)
-  //       .where('pickup', isEqualTo: true)
-  //       .where('accepted', isEqualTo: true)
-  //       .where('intransit', isEqualTo: true)
-  //       .where('delivered', isEqualTo: false)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots();
-
-  //   _intransitStream = FirebaseFirestore.instance
-  //       .collection('courier')
-  //       .where('category', isEqualTo: category)
-  //       .where('destinationNumber', isEqualTo: phoneNumber)
-  //       .where('pickup', isEqualTo: true)
-  //       .where('accepted', isEqualTo: true)
-  //       .where('intransit', isEqualTo: true)
-  //       .where('delivered', isEqualTo: false)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots();
-
-  //   _transit = StreamGroup.mergeBroadcast([ _intransitStream, _intransitDeliveryStream,]);
-
-  //   _deliveredStream = FirebaseFirestore.instance
-  //       .collection('courier')
-  //       .where('category', isEqualTo: category)
-  //       .where('sendBy', isEqualTo: auth.currentUser!.uid)
-  //       .where('pickup', isEqualTo: true)
-  //       .where('accepted', isEqualTo: true)
-  //       .where('intransit', isEqualTo: true)
-  //       .where('delivered', isEqualTo: true)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots();
-
-  //   _deliveryStream = FirebaseFirestore.instance
-  //       .collection('courier')
-  //       .where('category', isEqualTo: category)
-  //       .where('destinationNumber', isEqualTo: phoneNumber)
-  //       .where('pickup', isEqualTo: true)
-  //       .where('accepted', isEqualTo: true)
-  //       .where('intransit', isEqualTo: true)
-  //       .where('delivered', isEqualTo: true)
-  //       .orderBy('createdAt', descending: true)
-  //       .snapshots();
-
-  //   _processes = StreamGroup.merge([_processingStream, _processingReceiverStream]).asBroadcastStream();
-  //   _picked = StreamGroup.mergeBroadcast([_pickStream, _pickedStream]);
-  //   _completedStream = StreamGroup.mergeBroadcast([ _deliveredStream,_deliveryStream,]);
-  // }
-
-  // void getMyData() async {
-  //   final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(FirebaseAuth.instance.currentUser!.uid)
-  //       .get();
-  //   if (userDoc == null){
-  //     return;
-  //   }else {
-  //     setState(() {
-  //       phoneNumber = userDoc.get('phoneNumber');
-  //       location = userDoc.get('Address');
-  //       name = userDoc.get('name');
-  //     });
-  //   }
-  // }
-
+ 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
