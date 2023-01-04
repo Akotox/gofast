@@ -129,13 +129,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (userDoc == null) {
       return;
     } else {
-      setState(() {
+      if(mounted){
+        setState(() {
         phoneNumber = userDoc.get('phoneNumber');
         location = userDoc.get('Address');
         name = userDoc.get('name');
         userImage = userDoc.get("userImage");
         email = userDoc.get("email");
       });
+      }
+      
     }
   }
 

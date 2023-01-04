@@ -54,6 +54,7 @@ dependencies:
   url_launcher: ^6.1.7
   flutter_barcode_scanner: ^2.0.0
   easy_stepper: ^0.3.0
+  flutter_slidable: ^2.0.0
 
 dev_dependencies:
   flutter_test:

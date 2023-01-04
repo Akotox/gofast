@@ -14,59 +14,49 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).highlightColor,
-      // appBar: AppBar(
-      //   elevation: 0,
-      //   toolbarHeight: 35,
-      //   actions: [
-      //     IconButton(onPressed: (){}, icon: Icon(AntDesign.setting))
-      //   ],
-      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               height: MediaQuery.of(context).size.height*0.355,
               decoration:  BoxDecoration(
-                    // image:  const DecorationImage(
-                    // image: AssetImage("assets/images/bg.png"),
-                    // fit: BoxFit.cover,
-                    // opacity: 0.3),
-           gradient: LinearGradient(
-                      colors: [
-                        
-                        const Color(0xFF03608F).withOpacity(0.8), 
-                        const Color(0xFFFFFFFF).withOpacity(.6),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    )
+                gradient: LinearGradient(
+                            colors: [
+                              
+                              const Color(0xFF03608F).withOpacity(0.8), 
+                              const Color(0xFFFFFFFF).withOpacity(.6),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          )
               ),
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(12.0,50,8,8),
+                    padding: const EdgeInsets.fromLTRB(12.0,50,8,16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(60),
-                          child: Image.network(userImage!,width: 40,height: 40,), ),
+                     const SizedBox(
+                      height: 35,
+                      width: 35,
+                  child: CircleAvatar(backgroundColor: Colors.white38,
+                  backgroundImage: AssetImage("assets/images/user.png"),
+                  ),
+                  ),
                           const SizedBox(width: 8,),
                         Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(name, style: Theme.of(context).textTheme.headline2,),
+                              Text(name, style: Theme.of(context).textTheme.headline3,),
                               Text(email, style: Theme.of(context).textTheme.headline6,)
                             ],
                           ),
                         ),
-
-                        
-                      
                       ],
                     ),
                   ),
@@ -164,18 +154,22 @@ class _ProfileState extends State<Profile> {
               ),
             ),
 
-            const SizedBox(height: 15,),
+            const SizedBox(height: 10,),
 
            const  CustomList(),
 
-            const SizedBox(height: 15,),
+           const SizedBox(height: 10,),
+
+           const CourierSettings(),
+
+            const SizedBox(height: 10,),
 
             const CustomLis(),
 
             // SizedBox(height: 15,),
 
              Container(
-                    height: 160,
+                    height: 150,
                     decoration:  const BoxDecoration(
                     image:   DecorationImage(
                     image: AssetImage("assets/images/bg.png"),
@@ -198,6 +192,44 @@ class _ProfileState extends State<Profile> {
             
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+
+class CourierSettings extends StatelessWidget {
+  const CourierSettings({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height*0.119,
+      decoration:  BoxDecoration(
+              color: Colors.grey.shade100
+                ),
+                child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        
+        children:  [
+           ListTile(
+            leading: const Icon(Entypo.fingerprint),
+            title: Text("Verification", style: Theme.of(context).textTheme.headline5,),
+            trailing: const Icon(AntDesign.right, size: 16,),
+            tileColor: Colors.white,
+          ),
+           ListTile(
+            
+            leading: const Icon(AntDesign.wallet),
+            title: Text("Earnings", style: Theme.of(context).textTheme.headline5,),
+            trailing: const Icon(AntDesign.right, size: 16,),
+            tileColor: Colors.white,
+          ),
+          
+        ],
       ),
     );
   }

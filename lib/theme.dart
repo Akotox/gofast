@@ -66,9 +66,9 @@ class GoFastaAppTheme {
           fontWeight: FontWeight.w500,
         ),
         headline6: GoogleFonts.poppins(
-          color: const Color(0x50333333),
+          color: const Color(0x6B232323),
           fontSize: 10,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
         ),
         bodyText1: GoogleFonts.poppins(
           color: Colors.white,
@@ -80,6 +80,7 @@ class GoFastaAppTheme {
           fontSize: 9,
           fontWeight: FontWeight.bold,
         ),
+        
       ),
       listTileTheme: ListTileThemeData(
         visualDensity: VisualDensity.compact,

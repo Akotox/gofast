@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/screens/courier.dart';
 import 'package:gofast/screens/profile.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+class MainCourier extends StatefulWidget {
+  const MainCourier({Key? key}) : super(key: key);
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<MainCourier> createState() => _MainCourierState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  int pageIndex = 0;
+class _MainCourierState extends State<MainCourier> {
+  int pageIndex = 1;
 
   List<Widget> pageList = <Widget>[
     const HomePage(),
+    const CourierPage(),
     const Notifixations(),
     const Profile(),
   ];
@@ -43,12 +45,19 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 BottomNavigationBarItem(
                   icon: pageIndex == 1
+                      ? const Icon(MaterialCommunityIcons.truck_fast_outline)
+                      : const Icon(MaterialCommunityIcons.truck_fast_outline),
+                  label: 'Deliveries',
+                ),
+                
+                BottomNavigationBarItem(
+                  icon: pageIndex == 2
                       ? const Icon(Ionicons.notifications_circle)
                       : const Icon(Ionicons.notifications_circle),
                   label: 'Notifications',
                 ),
                 BottomNavigationBarItem(
-                  icon: pageIndex == 2
+                  icon: pageIndex == 3
                       ? const Icon(FontAwesome.user_circle_o)
                       : const Icon(
                           FontAwesome.user_circle_o,

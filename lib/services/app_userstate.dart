@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/screens/mainscreen_courier.dart';
 
 class AppUserState extends StatelessWidget {
   static const String id = 'app-user-state';
@@ -17,7 +18,7 @@ class AppUserState extends StatelessWidget {
           if (userSnapshot.data == null) {
             return const Login();
           } else if (userSnapshot.hasData) {
-            return const MainScreen();
+            return const MainCourier();
           } else if (userSnapshot.hasError) {
             return const Scaffold(
               body: Center(
