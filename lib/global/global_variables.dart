@@ -11,3 +11,13 @@ String signUpUrlImage =
 String drawerUrlImage =
     'https://c4.wallpaperflare.com/wallpaper/188/344/977/starlight-starry-sky-night-sky-tree-wallpaper-preview.jpg';
 
+List<String> parcelSize = [
+  "Food | Non Perishable",
+  "Food | Perishable",
+  "Daily Necessities",
+  "Files",
+  "Digital Products",
+  "Clothing",
+  "Home utilities",
+  "Liquids",
+];

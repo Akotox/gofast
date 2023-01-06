@@ -16,7 +16,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   late final TextEditingController _emailController =
       TextEditingController(text: '');
   late final TextEditingController _passwordController =
@@ -35,8 +34,6 @@ class _LoginPageState extends State<LoginPage> {
     _passwordFocusNode.dispose();
     super.dispose();
   }
-
-
 
   void _submitFormOnLogin() async {
     final isValid = _loginFormKey.currentState!.validate();
@@ -67,38 +64,36 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
+      body:
+          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Container(
-          height: MediaQuery.of(context).size.height*0.3,
+          height: MediaQuery.of(context).size.height * 0.3,
           child: Padding(
             padding: const EdgeInsets.only(top: 20.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                
-              const Icon(MaterialCommunityIcons.truck_fast_outline, size: 90,),
-               
-              Text("GoFasta", style: textStyle(40,Colors.black, FontWeight.bold),)
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Icon(
+                MaterialCommunityIcons.truck_fast_outline,
+                size: 90,
+              ),
+              Text(
+                "GoFasta",
+                style: textStyle(40, Colors.black, FontWeight.bold),
+              )
             ]),
           ),
         ),
-        
         Container(
-          height: MediaQuery.of(context).size.height*0.7,
+          height: MediaQuery.of(context).size.height * 0.7,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            color: Theme.of(context).iconTheme.color,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(60)
-            )
-          ),
+              color: Theme.of(context).iconTheme.color,
+              borderRadius:
+                  const BorderRadius.only(topLeft: Radius.circular(60))),
           child: Column(
             children: [
               Padding(
@@ -110,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                    
+
                       //email
                       TextFormField(
                         cursorColor: Colors.white,
@@ -151,11 +146,11 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                    
+
                       const SizedBox(
                         height: 20,
                       ),
-                    
+
                       //password
                       TextFormField(
                         cursorColor: Colors.white,
@@ -210,23 +205,19 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                    
+
                       const SizedBox(
                         height: 50,
                       ),
-                    
-                    
                     ],
                   ),
                 ),
               ),
-            
-            
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    child: Column(
-                      children: [
-                        MaterialButton(
+              Padding(
+                padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
+                child: Column(
+                  children: [
+                    MaterialButton(
                       onPressed: _submitFormOnLogin,
                       color: Color(0xFFFFFFFF),
                       elevation: 0,
@@ -250,7 +241,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                                  MaterialButton(
+                    MaterialButton(
                       onPressed: _submitFormOnLogin,
                       color: Color(0xFF043F60),
                       elevation: 0,
@@ -273,11 +264,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                      ],
-                    ),
-                  ),
-                  
-                 
+                  ],
+                ),
+              ),
             ],
           ),
         )

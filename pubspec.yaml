@@ -55,6 +55,8 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   easy_stepper: ^0.3.0
   flutter_slidable: ^2.0.0
+  cool_stepper: ^1.2.1
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:

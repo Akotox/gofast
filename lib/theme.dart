@@ -4,34 +4,52 @@ import 'package:google_fonts/google_fonts.dart';
 class GoFastaAppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
-      primarySwatch: Colors.teal,
-      iconTheme: IconThemeData(color: Color(0xFF03608F)),
+      primarySwatch: Colors.grey,
+      iconTheme: const IconThemeData(color: Color(0xFF03608F)),
       appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF03608F)),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
+              borderRadius: BorderRadius.circular(15),
+            )
           ),
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+          
+          backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF03608F)),
         ),
       ),
       inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Color(0xFFC4C4C4),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+            borderSide: BorderSide(
+              color: Color(0xFF111111),
+            ),
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.transparent,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+            borderSide: BorderSide(
+              color: Colors.black26,
+            ),
           ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+            borderSide: BorderSide(
+              color: Colors.black26,
+            ),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(19)),
+            borderSide: BorderSide(
+              color: Colors.black26,
+            ),
+          )
         ),
+      dividerColor: const Color(0xFF03608F),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: Colors.lightBlue.shade600
       ),
-      dividerColor: Colors.transparent,
       unselectedWidgetColor: const Color(0x50333333),
-      shadowColor: const Color(0xFF4C4C4C).withOpacity(0.5),
+      shadowColor: Colors.grey.withOpacity(.3),
       backgroundColor: Colors.white,
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color(0xFF03608F),
@@ -66,7 +84,7 @@ class GoFastaAppTheme {
           fontWeight: FontWeight.w500,
         ),
         headline6: GoogleFonts.poppins(
-          color: const Color(0x6B232323),
+          color: Color.fromARGB(170, 35, 35, 35),
           fontSize: 10,
           fontWeight: FontWeight.w600,
         ),

@@ -1,8 +1,12 @@
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 import 'package:gofast/global/global_variables.dart';
 import 'package:gofast/screens/auth/login.dart';
@@ -10,6 +14,7 @@ import 'package:gofast/widgets/courier/accepted.dart';
 import 'package:gofast/widgets/courier/delivered.dart';
 import 'package:gofast/widgets/courier/dispatched.dart';
 import 'package:gofast/widgets/courier/job.dart';
+import 'package:gofast/widgets/warehouse_stream.dart';
 import 'package:lottie/lottie.dart';
 
 class CourierPage extends StatefulWidget {
@@ -30,12 +35,19 @@ class _CourierPageState extends State<CourierPage>
   String greeting = "";
 
   String? category;
+  String? scanResult;
+  String? plate;
+  String? phoneNumber;
+  String? company;
+  bool? idVerification;
+  bool? courierVerification;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> _accepted;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dispatched;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dropoff;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _jobStream;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
 
   @override
   void initState() {
@@ -59,29 +71,31 @@ class _CourierPageState extends State<CourierPage>
         .orderBy('createdAt', descending: true)
         .snapshots();
 
+    _warehouse = FirebaseFirestore.instance.collection('warehouse').snapshots();
+
     _dispatched = FirebaseFirestore.instance
-                  .collection('courier')
-                  .where('category', isEqualTo: category)
-                  .where('courierId', isEqualTo: _auth.currentUser!.uid)
-                  .where('pickup', isEqualTo: true)
-                  .where('accepted', isEqualTo: true)
-                  .where('intransit', isEqualTo: true)
-                  .where('delivered', isEqualTo: false)
-                  .orderBy('createdAt', descending: true)
-                  .snapshots();
+        .collection('courier')
+        .where('category', isEqualTo: category)
+        .where('courierId', isEqualTo: _auth.currentUser!.uid)
+        .where('pickup', isEqualTo: true)
+        .where('accepted', isEqualTo: true)
+        .where('intransit', isEqualTo: true)
+        .where('delivered', isEqualTo: false)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
 
     _dropoff = FirebaseFirestore.instance
-                  .collection('courier')
-                  .where('category', isEqualTo: category)
-                  .where('courierId', isEqualTo: _auth.currentUser!.uid)
-                  .where('pickup', isEqualTo: true)
-                  .where('accepted', isEqualTo: true)
-                  .where('intransit', isEqualTo: true)
-                  .where('delivered', isEqualTo: true)
-                  .orderBy('createdAt', descending: true)
-                  .snapshots();
+        .collection('courier')
+        .where('category', isEqualTo: category)
+        .where('courierId', isEqualTo: _auth.currentUser!.uid)
+        .where('pickup', isEqualTo: true)
+        .where('accepted', isEqualTo: true)
+        .where('intransit', isEqualTo: true)
+        .where('delivered', isEqualTo: true)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
 
-   getMyData();
+    getMyData();
   }
 
   void getMyData() async {
@@ -99,6 +113,9 @@ class _CourierPageState extends State<CourierPage>
           name = userDoc.get('name');
           userImage = userDoc.get("userImage");
           email = userDoc.get("email");
+          idVerification = userDoc.get('IdVerification');
+          company = userDoc.get('company');
+          plate = userDoc.get('plate');
         });
       }
     }
@@ -115,26 +132,27 @@ class _CourierPageState extends State<CourierPage>
       body: SingleChildScrollView(
         child: Column(
           children: [
-            incomingContent(),
+            courierAppBar(),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.7,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(19),
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFFFFFFFF).withOpacity(0.5),
-                        const Color(0xFF03608F).withOpacity(0.5)
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    )),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Container(
+                  borderRadius: BorderRadius.circular(21),
+                  gradient: LinearGradient(
+                    colors: [
+                      const Color(0xFFFFFFFF),
+                      const Color(0xFF03608F).withOpacity(0.5),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
                         height: 40,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
@@ -142,7 +160,9 @@ class _CourierPageState extends State<CourierPage>
                         child: TabBar(
                             controller: _tabController,
                             indicator: BoxDecoration(
-                              color: const Color(0xFF03608F),
+                              color: Theme.of(context)
+                                  .progressIndicatorTheme
+                                  .color,
                               borderRadius: BorderRadius.circular(25),
                             ),
                             labelColor: Colors.white,
@@ -163,97 +183,48 @@ class _CourierPageState extends State<CourierPage>
                               )
                             ]),
                       ),
-                      Expanded(
-                        child:
-                            TabBarView(controller: _tabController, children: [
-                          // Processing
-                          Column(
-                            children: [
-                              Jobs(jobStream: _jobStream),
-                            ],
-                          ),
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                          controller: _tabController,
+                          physics: NeverScrollableScrollPhysics(),
+                          children: [
+                            // Processing
+                            Column(
+                              children: [
+                                Jobs(jobStream: _jobStream),
+                              ],
+                            ),
 
-                          // Dispatch
-                          Column(
-                            children: [
-                              Accepted(accepted: _accepted),
-                            ],
-                          ),
+                            // Dispatch
+                            Column(
+                              children: [
+                                Accepted(accepted: _accepted),
+                              ],
+                            ),
 
-                          // Transit
+                            // Transit
 
-                          Column(
-                            children: [
-                              Dispatched(dispatched: _dispatched),
-                            ],
-                          ),
+                            Column(
+                              children: [
+                                Dispatched(dispatched: _dispatched),
+                              ],
+                            ),
 
-                          // Delivered
+                            // Delivered
 
-                          Column(
-                            children: [
-                              DropOff(dropoff: _dropoff),
-                            ],
-                          ),
-                        ]),
-                      )
-                    ],
-                  ),
+                            Column(
+                              children: [
+                                DropOff(dropoff: _dropoff),
+                              ],
+                            ),
+                          ]),
+                    )
+                  ],
                 ),
               ),
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget outGoingContent() {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        color: Theme.of(context).iconTheme.color,
-        image: const DecorationImage(
-            image: AssetImage("assets/images/bg.png"),
-            fit: BoxFit.cover,
-            opacity: 0.45),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(25),
-          bottomRight: Radius.circular(25),
-        ),
-      ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 5,
-              ),
-              Row(
-                children: [
-                  Lottie.asset('assets/json/delivery.json',
-                      width: 50, height: 50),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    "OutGoing Parcels",
-                    style: Theme.of(context).textTheme.headline1,
-                  ),
-                ],
-              ),
-              search(),
-              const SizedBox(
-                height: 10,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              tools()
-            ],
-          ),
         ),
       ),
     );
@@ -270,17 +241,22 @@ class _CourierPageState extends State<CourierPage>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  const Icon(MaterialCommunityIcons.qrcode_scan),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'QR Scanner'.toUpperCase(),
-                    style: Theme.of(context).textTheme.headline5,
-                  ),
-                ],
+              InkWell(
+                onTap: () {
+                  scanBarCode();
+                },
+                child: Row(
+                  children: [
+                    const Icon(MaterialCommunityIcons.qrcode_scan),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      'QR Scanner'.toUpperCase(),
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                  ],
+                ),
               ),
               InkWell(
                 onTap: () {
@@ -309,17 +285,22 @@ class _CourierPageState extends State<CourierPage>
                       MaterialPageRoute(
                           builder: (context) => const DeliveryBoy()));
                 },
-                child: Row(
-                  children: [
-                    const Icon(MaterialCommunityIcons.warehouse),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      'Warehouses'.toUpperCase(),
-                      style: Theme.of(context).textTheme.headline5,
-                    ),
-                  ],
+                child: InkWell(
+                  onTap: () {
+                    warehousesList();
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(MaterialCommunityIcons.warehouse),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        'Warehouses'.toUpperCase(),
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -327,7 +308,7 @@ class _CourierPageState extends State<CourierPage>
         ));
   }
 
-  Widget incomingContent() {
+  Widget courierAppBar() {
     return Container(
       height: 170,
       decoration: BoxDecoration(
@@ -335,7 +316,7 @@ class _CourierPageState extends State<CourierPage>
         image: const DecorationImage(
             image: AssetImage("assets/images/bg.png"),
             fit: BoxFit.cover,
-            opacity: 0.45),
+            opacity: 0.3),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(25),
           bottomRight: Radius.circular(25),
@@ -343,69 +324,50 @@ class _CourierPageState extends State<CourierPage>
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20.0),
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(
                 height: 5,
               ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                  child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [  
-                  Container(
-                    height: 22,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).backgroundColor,
-                      borderRadius: const BorderRadius.all(
-                       Radius.circular(10),
+                children: [
+                  Expanded(
+                      child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 2.0, right: 16),
+                        child: Text(
+                          "$greeting  $name",
+                          style: textStyle(16, Colors.white, FontWeight.bold),
+                        ),
                       ),
-                      gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF03608F).withOpacity(0.5),
-                        const Color(0xFFFFFFFF).withOpacity(0.8),
-                      ],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.bottomCenter,
-                    )
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 2.0, right: 16),
-                      child: Text("$greeting   $name" ,
-                          style: Theme.of(context).textTheme.headline3),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  
-                const SizedBox(
-                      height: 35,
-                      width: 35,
-                  child: CircleAvatar(backgroundColor: Colors.white38,
-                  backgroundImage: AssetImage("assets/images/user.png"),
-                  ),
-                  ),
-                      
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const SizedBox(
+                        height: 35,
+                        width: 35,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white38,
+                          backgroundImage: AssetImage("assets/images/user.png"),
+                        ),
+                      ),
+                    ],
+                  )),
                 ],
-              )),
-              
-            ],
-          ),
-                    
-
+              ),
               Row(
                 children: [
                   Text(
                     "Courier Center",
                     style: Theme.of(context).textTheme.headline1,
                   ),
-                    const SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Lottie.asset('assets/json/delivery.json',
@@ -423,55 +385,6 @@ class _CourierPageState extends State<CourierPage>
     );
   }
 
-  Widget search() {
-    return SizedBox(
-      height: 50,
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              height: 49,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Theme.of(context).backgroundColor,
-              ),
-              child: TextField(
-                readOnly: true,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(
-                    AntDesign.search1,
-                    color: Color(0xFF03608F),
-                  ),
-                  hintText: "Search Using Parcel Number or Scan the QRCode",
-                  hintStyle: Theme.of(context).textTheme.headline6,
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            width: 8,
-          ),
-          InkWell(
-            onTap: () {},
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              width: 50,
-              height: 49,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Theme.of(context).backgroundColor,
-              ),
-              child: const Icon(MaterialCommunityIcons.qrcode_scan),
-            ),
-          )
-        ],
-      ),
-    );
-    ;
-  }
-
-
   void getGreeting() {
     int hours = now.hour;
     if (hours >= 1 && hours <= 12) {
@@ -483,5 +396,69 @@ class _CourierPageState extends State<CourierPage>
     } else if (hours >= 21 && hours <= 24) {
       greeting = "Good Night";
     }
+  }
+
+  warehousesList() {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black54,
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.74,
+              decoration: BoxDecoration(
+                  image: const DecorationImage(
+                      image: AssetImage("assets/images/extended.png"),
+                      fit: BoxFit.cover,
+                      opacity: 0.45),
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(19),
+                      topRight: Radius.circular(19)),
+                  color: Colors.lightBlue.shade600),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                    child: StorageStream(warehouse: _warehouse),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Future scanBarCode() async {
+    int progress = 2;
+    String scanResult;
+    try {
+      scanResult = await FlutterBarcodeScanner.scanBarcode(
+          '#00FF00', 'Cancel', true, ScanMode.QR);
+    } on PlatformException {
+      scanResult = 'Failed to get platform version.';
+    }
+    if (!mounted) return;
+
+    setState(() {
+      this.scanResult = scanResult;
+
+      final shipmentId = scanResult;
+      FirebaseFirestore.instance.collection('courier').doc(shipmentId).update({
+        'courierId': FirebaseAuth.instance.currentUser!.uid,
+        'courierNumber': phoneNumber,
+        'vehicle': plate,
+        'pickup': true,
+        'pickedAt': DateTime.now(),
+        'company': company,
+        'accepted': true,
+        'progress': progress,
+      });
+    });
   }
 }
