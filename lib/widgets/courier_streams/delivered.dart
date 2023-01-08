@@ -5,15 +5,14 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
-class Processing extends StatelessWidget {
-  const Processing({
+class DropOff extends StatelessWidget {
+  const DropOff({
     Key? key,
-    required Stream<QuerySnapshot<Map<String, dynamic>>>
-        processingReceiverStream,
-  })  : _processingReceiverStream = processingReceiverStream,
+    required Stream<QuerySnapshot<Map<String, dynamic>>> dropoff,
+  })  : _dropoff = dropoff,
         super(key: key);
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _processingReceiverStream;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _dropoff;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class Processing extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _processingReceiverStream,
+            stream: _dropoff,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting ||
                   snapshot.connectionState == ConnectionState.none) {
@@ -31,7 +30,9 @@ class Processing extends StatelessWidget {
                   return ListView.builder(
                     itemCount: snapshot.data?.docs.length,
                     shrinkWrap: true,
+                    // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
+                      var package = snapshot.data?.docs[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom:8.0, right: 8, left: 8),
                         child: ClipRRect(
@@ -91,29 +92,15 @@ class Processing extends StatelessWidget {
                           ),
                         ),
                       );
-                    
                     },
                   );
                 } else {
                   return const Empty();
                 }
               }
-              return const ErrorWid();
+              return const CircularProgressIndicator();
             },
           ),
         ));
-  }
-}
-
-class ErrorWid extends StatelessWidget {
-  const ErrorWid({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Image.asset('assets/images/digi.png'),
-    );
   }
 }

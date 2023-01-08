@@ -5,14 +5,14 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
-class Jobs extends StatelessWidget {
-  const Jobs({
+class OutDelivered extends StatelessWidget {
+  const OutDelivered({
     Key? key,
-    required Stream<QuerySnapshot<Map<String, dynamic>>> jobStream,
-  })  : _jobStream = jobStream,
+    required Stream<QuerySnapshot<Map<String, dynamic>>> deliveredStream,
+  })  : _deliveredStream = deliveredStream,
         super(key: key);
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _jobStream;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _deliveredStream;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class Jobs extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _jobStream,
+            stream: _deliveredStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting ||
                   snapshot.connectionState == ConnectionState.none) {
@@ -32,13 +32,16 @@ class Jobs extends StatelessWidget {
                     shrinkWrap: true,
                     // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
+                      var package = snapshot.data?.docs[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom:8.0, right: 8, left: 8),
+                        padding: const EdgeInsets.only(
+                            bottom: 8.0, right: 8, left: 8),
                         child: ClipRRect(
-                          borderRadius: const BorderRadius.all(Radius.circular(19)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(19)),
                           child: Slidable(
                             key: const ValueKey(0),
-                           
+
                             // The end action pane is the one at the right or the bottom side.
                             endActionPane: const ActionPane(
                               motion: ScrollMotion(),
@@ -54,20 +57,22 @@ class Jobs extends StatelessWidget {
                                 ),
                                 SlidableAction(
                                   onPressed: doNothing,
-                                  backgroundColor: Color.fromARGB(255, 3, 110, 164),
+                                  backgroundColor:
+                                      Color.fromARGB(255, 3, 110, 164),
                                   foregroundColor: Colors.white,
                                   icon: Feather.package,
                                   label: 'Collect',
                                   borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(19),
-                                    bottomRight: Radius.circular(19)
-                                  ),
+                                      topRight: Radius.circular(19),
+                                      bottomRight: Radius.circular(19)),
                                 ),
                               ],
                             ),
-                      
+
                             child: ShipmentWidget(
-                              shipmentId: snapshot.data?.docs[index]['shipmentId'],
+                              package: package,
+                              shipmentId: snapshot.data?.docs[index]
+                                  ['shipmentId'],
                               category: snapshot.data?.docs[index]['category'],
                               destination: snapshot.data?.docs[index]
                                   ['destination'],
@@ -79,13 +84,16 @@ class Jobs extends StatelessWidget {
                               sendBy: snapshot.data?.docs[index]['sendBy'],
                               weight: snapshot.data?.docs[index]['weight'],
                               pickup: snapshot.data?.docs[index]['pickup'],
-                              createdAt: snapshot.data?.docs[index]['createdAt'],
-                              delivered: snapshot.data?.docs[index]['delivered'],
+                              createdAt: snapshot.data?.docs[index]
+                                  ['createdAt'],
+                              delivered: snapshot.data?.docs[index]
+                                  ['delivered'],
                               accepted: snapshot.data?.docs[index]['accepted'],
                               // startLat: snapshot.data?.docs[index]['startLat'],
                               // startLng: snapshot.data?.docs[index]['startLng'],
                               // postedDate: '',
-                              intransit: snapshot.data?.docs[index]['intransit'],
+                              intransit: snapshot.data?.docs[index]
+                                  ['intransit'],
                               progress: snapshot.data?.docs[index]['progress'],
                             ),
                           ),
@@ -97,22 +105,9 @@ class Jobs extends StatelessWidget {
                   return const Empty();
                 }
               }
-              return const ErrorWid();
+              return const CircularProgressIndicator();
             },
           ),
         ));
-  }
-}
-
-class ErrorWid extends StatelessWidget {
-  const ErrorWid({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Image.asset('assets/images/digi.png'),
-    );
   }
 }

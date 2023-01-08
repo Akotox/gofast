@@ -5,14 +5,14 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
-
-class Dispatch extends StatelessWidget {
-  const Dispatch({
+class Jobs extends StatelessWidget {
+  const Jobs({
     Key? key,
-    required Stream<QuerySnapshot<Map<String, dynamic>>> pickedStream,
-  }) : _pickedStream = pickedStream, super(key: key);
+    required Stream<QuerySnapshot<Map<String, dynamic>>> jobStream,
+  })  : _jobStream = jobStream,
+        super(key: key);
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _pickedStream;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _jobStream;
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +20,11 @@ class Dispatch extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _pickedStream,
+            stream: _jobStream,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.none) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.none) {
                 return const ShipmentShimmer();
-
               } else if (snapshot.connectionState == ConnectionState.active) {
                 if (snapshot.data?.docs.isNotEmpty == true) {
                   return ListView.builder(
@@ -32,8 +32,7 @@ class Dispatch extends StatelessWidget {
                     shrinkWrap: true,
                     // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-
-
+                      var package = snapshot.data?.docs[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom:8.0, right: 8, left: 8),
                         child: ClipRRect(
@@ -69,6 +68,7 @@ class Dispatch extends StatelessWidget {
                             ),
                       
                             child: ShipmentWidget(
+                              package: package,
                               shipmentId: snapshot.data?.docs[index]['shipmentId'],
                               category: snapshot.data?.docs[index]['category'],
                               destination: snapshot.data?.docs[index]
@@ -93,17 +93,28 @@ class Dispatch extends StatelessWidget {
                           ),
                         ),
                       );
-
                     },
                   );
                 } else {
-                  return  const Empty();
+                  return const Empty();
                 }
               }
-              return const CircularProgressIndicator();
-
+              return const ErrorWid();
             },
           ),
         ));
+  }
+}
+
+class ErrorWid extends StatelessWidget {
+  const ErrorWid({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Image.asset('assets/images/digi.png'),
+    );
   }
 }

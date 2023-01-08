@@ -9,13 +9,14 @@ class GoFastaAppTheme {
       appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF03608F)),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
+          visualDensity: VisualDensity.adaptivePlatformDensity,
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(19),
             )
           ),
           
-          backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF03608F)),
+          backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF006094)),
         ),
       ),
       inputDecorationTheme: const InputDecorationTheme(

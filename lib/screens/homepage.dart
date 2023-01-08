@@ -5,9 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:glass/glass.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 import 'package:gofast/global/global_variables.dart';
 import 'package:gofast/widgets/send_parcel_widget.dart';
+import 'package:gofast/widgets/shipment_streams/in_delivered.dart';
+import 'package:gofast/widgets/shipment_streams/in_dispatch.dart';
+import 'package:gofast/widgets/shipment_streams/in_processing.dart';
+import 'package:gofast/widgets/shipment_streams/in_transit.dart';
+import 'package:gofast/widgets/shipment_streams/out_dispatch.dart';
+import 'package:gofast/widgets/shipment_streams/out_processing.dart';
+import 'package:gofast/widgets/shipment_streams/out_transit.dart';
 import 'package:gofast/widgets/warehouse_stream.dart';
 
 import 'package:lottie/lottie.dart';
@@ -26,7 +34,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   );
 
   String? category;
-  String? scanResult;
+  String? results;
   String? plate;
   String? phoneNumber;
   String? company;
@@ -42,13 +50,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late Stream<QuerySnapshot<Map<String, dynamic>>> _intransitStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveredStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveryStream;
-  late Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
+  late Future<QuerySnapshot> _warehouse;
 
   @override
   void initState() {
     super.initState();
 
-    _warehouse = FirebaseFirestore.instance.collection('warehouse').snapshots();
+    _warehouse = FirebaseFirestore.instance.collection('warehouse').get();
 
     _processingStream = FirebaseFirestore.instance
         .collection('courier')
@@ -171,7 +179,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             indicatorWeight: 1,
             splashBorderRadius: const BorderRadius.all(Radius.circular(30)),
             unselectedLabelColor: Colors.grey.withOpacity(0.7),
-            
+
             labelColor: Theme.of(context).backgroundColor,
             labelStyle: Theme.of(context).textTheme.headline4,
             indicatorColor: Colors.transparent,
@@ -233,11 +241,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               height: 40,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(25),
-                                  color: Colors.grey[300]),
+                                  ),
                               child: TabBar(
                                   controller: _tabController,
                                   indicator: BoxDecoration(
-                                    color: Theme.of(context).progressIndicatorTheme.color,
+                                    color: Theme.of(context)
+                                        .progressIndicatorTheme
+                                        .color,
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                   labelColor: Colors.white,
@@ -259,7 +269,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       text: "Delivered",
                                     )
                                   ]),
-                            ),
+                            ).asGlass(
+                        tintColor: Theme.of(context).dividerColor,
+                  clipBorderRadius: BorderRadius.circular(19.0),
+                  blurX: 8,
+                  blurY: 8
+                      ),
                           ),
                           Expanded(
                             child: TabBarView(
@@ -335,11 +350,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               height: 40,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(25),
-                                  color: Colors.grey[300]),
+                                  ),
                               child: TabBar(
                                   controller: _tabController,
                                   indicator: BoxDecoration(
-                                    color: Theme.of(context).progressIndicatorTheme.color,
+                                    color: Theme.of(context)
+                                        .progressIndicatorTheme
+                                        .color,
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                   labelColor: Colors.white,
@@ -361,7 +378,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       text: "Delivered",
                                     )
                                   ]),
-                            ),
+                            ).asGlass(
+                        tintColor: Theme.of(context).dividerColor,
+                  clipBorderRadius: BorderRadius.circular(19.0),
+                  blurX: 8,
+                  blurY: 8
+                      ),
                           ),
                           Expanded(
                             child: TabBarView(
@@ -404,7 +426,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           )
                         ],
                       ),
-                    ),
+                    ).asGlass(
+                        tintColor: Theme.of(context).dividerColor,
+                  clipBorderRadius: BorderRadius.circular(19.0),
+                  blurX: 8,
+                  blurY: 8
+                      ),
                   )
                 ],
               ),
@@ -646,7 +673,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: Container(
               height: MediaQuery.of(context).size.height * 0.661,
               decoration: BoxDecoration(
-                 image: const DecorationImage(
+                  image: const DecorationImage(
                       image: AssetImage("assets/images/extended.png"),
                       fit: BoxFit.cover,
                       opacity: 0.45),
@@ -803,20 +830,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
     if (!mounted) return;
 
-    setState(() {
-      this.scanResult = scanResult;
-
-      final shipmentId = scanResult;
-      FirebaseFirestore.instance.collection('courier').doc(shipmentId).update({
-        'courierId': FirebaseAuth.instance.currentUser!.uid,
-        'courierNumber': phoneNumber,
-        'vehicle': plate,
-        'pickup': true,
-        'pickedAt': DateTime.now(),
-        'company': company,
-        'accepted': true,
-        'progress': 0.50,
+    if (scanResult.contains("parcel")) {
+      setState(() {
+        final shipmentId = scanResult.substring(0, 28);
+        FirebaseFirestore.instance
+            .collection('courier')
+            .doc(shipmentId)
+            .update({
+          'courierId': FirebaseAuth.instance.currentUser!.uid,
+          'courierNumber': phoneNumber,
+          'vehicle': plate,
+          'pickup': true,
+          'pickedAt': DateTime.now(),
+          'company': company,
+          'accepted': true,
+          'progress': 1,
+        });
       });
-    });
+    }
   }
 }

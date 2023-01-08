@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -6,13 +5,13 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
-class Dispatched extends StatelessWidget {
-  const Dispatched({
+class OutTransit extends StatelessWidget {
+  const OutTransit({
     Key? key,
-    required Stream<QuerySnapshot<Map<String, dynamic>>> dispatched,
-  }) : _dispatched = dispatched, super(key: key);
+    required Stream<QuerySnapshot<Map<String, dynamic>>> intransitDeliveryStream,
+  }) : _intransitDeliveryStream = intransitDeliveryStream, super(key: key);
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _dispatched;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _intransitDeliveryStream;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,7 @@ class Dispatched extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _dispatched,
+            stream: _intransitDeliveryStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.none) {
                 return const ShipmentShimmer();
@@ -32,8 +31,7 @@ class Dispatched extends StatelessWidget {
                     shrinkWrap: true,
                     // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-
-
+                      var package = snapshot.data?.docs[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom:8.0, right: 8, left: 8),
                         child: ClipRRect(
@@ -69,6 +67,7 @@ class Dispatched extends StatelessWidget {
                             ),
                       
                             child: ShipmentWidget(
+                              package: package,
                               shipmentId: snapshot.data?.docs[index]['shipmentId'],
                               category: snapshot.data?.docs[index]['category'],
                               destination: snapshot.data?.docs[index]
@@ -93,7 +92,6 @@ class Dispatched extends StatelessWidget {
                           ),
                         ),
                       );
-                    
 
                     },
                   );

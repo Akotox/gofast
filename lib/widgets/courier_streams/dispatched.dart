@@ -5,13 +5,14 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
-class Transit extends StatelessWidget {
-  const Transit({
+class Dispatched extends StatelessWidget {
+  const Dispatched({
     Key? key,
-    required Stream<QuerySnapshot<Map<String, dynamic>>> intransitStream,
-  }) : _intransitStream = intransitStream, super(key: key);
+    required Stream<QuerySnapshot<Map<String, dynamic>>> dispatched,
+  })  : _dispatched = dispatched,
+        super(key: key);
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _intransitStream;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _dispatched;
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +20,11 @@ class Transit extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _intransitStream,
+            stream: _dispatched,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.none) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.none) {
                 return const ShipmentShimmer();
-
               } else if (snapshot.connectionState == ConnectionState.active) {
                 if (snapshot.data?.docs.isNotEmpty == true) {
                   return ListView.builder(
@@ -31,13 +32,17 @@ class Transit extends StatelessWidget {
                     shrinkWrap: true,
                     // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
+                      var package = snapshot.data?.docs[index];
+
                       return Padding(
-                        padding: const EdgeInsets.only(bottom:8.0, right: 8, left: 8),
+                        padding: const EdgeInsets.only(
+                            bottom: 8.0, right: 8, left: 8),
                         child: ClipRRect(
-                          borderRadius: const BorderRadius.all(Radius.circular(19)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(19)),
                           child: Slidable(
                             key: const ValueKey(0),
-                           
+
                             // The end action pane is the one at the right or the bottom side.
                             endActionPane: const ActionPane(
                               motion: ScrollMotion(),
@@ -53,20 +58,21 @@ class Transit extends StatelessWidget {
                                 ),
                                 SlidableAction(
                                   onPressed: doNothing,
-                                  backgroundColor: Color.fromARGB(255, 3, 110, 164),
+                                  backgroundColor:
+                                      Color.fromARGB(255, 3, 110, 164),
                                   foregroundColor: Colors.white,
                                   icon: Feather.package,
                                   label: 'Collect',
                                   borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(19),
-                                    bottomRight: Radius.circular(19)
-                                  ),
+                                      topRight: Radius.circular(19),
+                                      bottomRight: Radius.circular(19)),
                                 ),
                               ],
                             ),
-                      
+
                             child: ShipmentWidget(
-                              shipmentId: snapshot.data?.docs[index]['shipmentId'],
+                              shipmentId: snapshot.data?.docs[index]
+                                  ['shipmentId'],
                               category: snapshot.data?.docs[index]['category'],
                               destination: snapshot.data?.docs[index]
                                   ['destination'],
@@ -78,13 +84,16 @@ class Transit extends StatelessWidget {
                               sendBy: snapshot.data?.docs[index]['sendBy'],
                               weight: snapshot.data?.docs[index]['weight'],
                               pickup: snapshot.data?.docs[index]['pickup'],
-                              createdAt: snapshot.data?.docs[index]['createdAt'],
-                              delivered: snapshot.data?.docs[index]['delivered'],
+                              createdAt: snapshot.data?.docs[index]
+                                  ['createdAt'],
+                              delivered: snapshot.data?.docs[index]
+                                  ['delivered'],
                               accepted: snapshot.data?.docs[index]['accepted'],
                               // startLat: snapshot.data?.docs[index]['startLat'],
                               // startLng: snapshot.data?.docs[index]['startLng'],
                               // postedDate: '',
-                              intransit: snapshot.data?.docs[index]['intransit'],
+                              intransit: snapshot.data?.docs[index]
+                                  ['intransit'],
                               progress: snapshot.data?.docs[index]['progress'],
                             ),
                           ),
@@ -93,14 +102,12 @@ class Transit extends StatelessWidget {
                     },
                   );
                 } else {
-                  return  const Empty();
+                  return const Empty();
                 }
               }
               return const CircularProgressIndicator();
-
             },
           ),
         ));
   }
 }
-

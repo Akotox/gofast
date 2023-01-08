@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
@@ -8,7 +7,8 @@ class Deliveries extends StatelessWidget {
   const Deliveries({
     Key? key,
     required Stream<QuerySnapshot<Map<String, dynamic>>> deliveries,
-  }) : _deliveries = deliveries, super(key: key);
+  })  : _deliveries = deliveries,
+        super(key: key);
 
   final Stream<QuerySnapshot<Map<String, dynamic>>> _deliveries;
 
@@ -20,9 +20,9 @@ class Deliveries extends StatelessWidget {
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
             stream: _deliveries,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.none) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.none) {
                 return const ShipmentShimmer();
-
               } else if (snapshot.connectionState == ConnectionState.active) {
                 if (snapshot.data?.docs.isNotEmpty == true) {
                   return ListView.builder(
@@ -30,18 +30,18 @@ class Deliveries extends StatelessWidget {
                     shrinkWrap: true,
                     // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-
+                      var package = snapshot.data?.docs[index];
 
                       return ShipmentWidget(
+                        package: package,
                         shipmentId: snapshot.data?.docs[index]['shipmentId'],
                         category: snapshot.data?.docs[index]['category'],
-                        destination: snapshot.data?.docs[index]
-                        ['destination'],
+                        destination: snapshot.data?.docs[index]['destination'],
                         destinationNumber: snapshot.data?.docs[index]
-                        ['destinationNumber'],
+                            ['destinationNumber'],
                         pickupAd: snapshot.data?.docs[index]['pickupAd'],
                         pickupNumber: snapshot.data?.docs[index]
-                        ['pickupNumber'],
+                            ['pickupNumber'],
                         sendBy: snapshot.data?.docs[index]['sendBy'],
                         weight: snapshot.data?.docs[index]['weight'],
                         pickup: snapshot.data?.docs[index]['pickup'],
@@ -54,18 +54,15 @@ class Deliveries extends StatelessWidget {
                         intransit: snapshot.data?.docs[index]['intransit'],
                         progress: snapshot.data?.docs[index]['progress'],
                       );
-
                     },
                   );
                 } else {
-                  return  const Empty();
+                  return const Empty();
                 }
               }
               return const CircularProgressIndicator();
-
             },
           ),
         ));
   }
 }
-

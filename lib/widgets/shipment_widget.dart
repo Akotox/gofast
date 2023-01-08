@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/global/global_methods.dart';
 import 'package:gofast/global/global_variables.dart';
+import 'package:gofast/providers/shipment.dart';
 import 'package:gofast/screens/shipment_details.dart';
 import 'package:intl/intl.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:glass/glass.dart';
 import 'package:easy_stepper/easy_stepper.dart';
+import 'package:provider/provider.dart';
 
 class ShipmentWidget extends StatefulWidget {
   final String shipmentId;
@@ -27,6 +29,8 @@ class ShipmentWidget extends StatefulWidget {
   final bool delivered;
   final bool accepted;
   final int createdAt;
+  final QueryDocumentSnapshot<Map<String, dynamic>>? package;
+
   // final double startLat;
   // final double startLng;
 
@@ -47,6 +51,7 @@ class ShipmentWidget extends StatefulWidget {
     // required this.postedDate,
     required this.progress,
     required this.intransit,
+    this.package,
     // required this.startLat,
     // required this.startLng,
   });
@@ -60,8 +65,8 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    
-    int activeStep = widget.progress;
+    var _package = Provider.of<ShipmentProvider>(context);
+    int activeStep = widget.package?["progress"];
     var updateTime = DateFormat.yMMMd()
         .format(DateTime.fromMicrosecondsSinceEpoch(widget.createdAt));
     var _today = DateFormat.yMMMd().format(DateTime.fromMicrosecondsSinceEpoch(
@@ -80,6 +85,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
 
     return InkWell(
       onTap: () {
+        _package.getShipment(widget.package);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -88,6 +94,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                       shipmentId: widget.shipmentId,
                       destination: widget.destination,
                       weight: widget.weight,
+                      progress: widget.progress,
                     )));
       },
       child: Stack(
@@ -95,18 +102,11 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
           Container(
             height: MediaQuery.of(context).size.height * 0.21,
             padding: const EdgeInsets.all(16),
-            
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(19),
                 bottomLeft: Radius.circular(19),
               ),
-              // border: Border(
-              //   bottom: BorderSide(
-              //       width: 1.0, color: Theme.of(context).dividerColor.withOpacity(0.1)),
-              //       top:
-              //       BorderSide(width: 1.0, color: Theme.of(context).dividerColor.withOpacity(0.1)),
-              // ),
               image: const DecorationImage(
                   image: AssetImage("assets/images/bg.png"),
                   fit: BoxFit.cover,
@@ -127,65 +127,56 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.shipmentId,
-                        style: Theme.of(context).textTheme.headline5,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                SizedBox(
+                  height: 10,
                 ),
                 EasyStepper(
-                  alignment: Alignment.center,
-                  activeStep: activeStep,
-                  enableStepTapping: false,
-                  showTitle: true,
-                  disableScroll: true,
-                  lineLength: 45,
-                  lineDotRadius: 1,
-                  lineSpace: 3,
-                  stepRadius: 20,
-                  unreachedStepIconColor: Colors.black38,
-                  unreachedStepBorderColor: Colors.black38,
-                  unreachedStepTextColor: Colors.black38,
-                  finishedStepBackgroundColor:
-                      Theme.of(context).iconTheme.color,
-                  finishedStepBorderColor: Theme.of(context).iconTheme.color,
-                  finishedStepTextColor: Theme.of(context).iconTheme.color,
-                  activeStepBorderColor: Theme.of(context).iconTheme.color,
-                  lineColor: Theme.of(context).iconTheme.color,
-                  padding: 8,
-                  steps: const [
-                    EasyStep(
-                      icon: Icon(MaterialCommunityIcons.bike_fast),
-                      activeIcon: Icon(MaterialCommunityIcons.cached),
-                      finishIcon: Icon(Icons.check_circle),
-                      title: 'Processing',
-                      // lineText: '1.7 KM',
-                    ),
-                    EasyStep(
-                      icon: Icon(CupertinoIcons.cube_box),
-                      finishIcon: Icon(Icons.check_circle),
-                      title: 'Dispatch',
-                      // lineText: '3 KM',
-                    ),
-                    EasyStep(
-                      icon: Icon(MaterialCommunityIcons.bike_fast),
-                      finishIcon: Icon(Icons.check_circle),
-                      title: 'In-transit',
-                    ),
-                    EasyStep(
-                      icon: Icon(MaterialIcons.location_history),
-                      finishIcon: Icon(Icons.check_circle),
-                      title: 'Drop Off',
-                    ),
-                  ],
-                  onStepReached: (index) => setState(() => activeStep = index),
-                ),
+                    alignment: Alignment.topLeft,
+                    activeStep: activeStep,
+                    enableStepTapping: false,
+                    showTitle: true,
+                    disableScroll: true,
+                    lineLength: 50,
+                    lineDotRadius: 1,
+                    lineSpace: 3,
+                    stepRadius: 20,
+                    unreachedStepIconColor: Colors.black38,
+                    unreachedStepBorderColor: Colors.black38,
+                    unreachedStepTextColor: Colors.black38,
+                    finishedStepBackgroundColor:
+                        Theme.of(context).iconTheme.color,
+                    finishedStepBorderColor: Theme.of(context).iconTheme.color,
+                    finishedStepTextColor: Theme.of(context).iconTheme.color,
+                    activeStepBorderColor: Theme.of(context).iconTheme.color,
+                    lineColor: Theme.of(context).iconTheme.color,
+                    padding: 8,
+                    steps: const [
+                      EasyStep(
+                        icon: Icon(MaterialCommunityIcons.bike_fast),
+                        activeIcon: Icon(MaterialCommunityIcons.cached),
+                        finishIcon: Icon(Icons.check_circle),
+                        title: 'Processing',
+                        // lineText: '1.7 KM',
+                      ),
+                      EasyStep(
+                        icon: Icon(CupertinoIcons.cube_box),
+                        finishIcon: Icon(Icons.check_circle),
+                        title: 'Dispatch',
+                        // lineText: '3 KM',
+                      ),
+                      EasyStep(
+                        icon: Icon(MaterialCommunityIcons.bike_fast),
+                        finishIcon: Icon(Icons.check_circle),
+                        title: 'In-transit',
+                      ),
+                      EasyStep(
+                        icon: Icon(MaterialIcons.location_history),
+                        finishIcon: Icon(Icons.check_circle),
+                        title: 'Drop Off',
+                      ),
+                    ],
+                    onStepReached: (index) =>
+                        setState(() => activeStep = index)),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -235,7 +226,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                           width: 5,
                         ),
                         Text(
-                          widget.destination,
+                          widget.package?['destination'],
                           style: Theme.of(context).textTheme.headline6,
                         ),
                       ],
@@ -245,21 +236,59 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
               ],
             ),
           ),
-          widget.sendBy == _auth.currentUser!.uid
+         
+          Positioned(
+              top: 5,
+              right: 16,
+              child: Container(
+                height: 26,
+                width: MediaQuery.of(context).size.width * 0.31,
+                decoration: BoxDecoration(
+                    // color: Colors.grey.shade700,
+                    borderRadius: const BorderRadius.all(Radius.circular(19))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      AntDesign.clockcircleo,
+                      color: Colors.black45,
+                      size: 15,
+                    ),
+                    Text(
+                      "07-01  11:19  | 24 hrs",
+                      style: textStyle(12, Colors.black45, FontWeight.w600),
+                    ),
+                  ],
+                ),
+              ).asGlass(
+                tintColor: Theme.of(context).dividerColor,
+                  clipBorderRadius: BorderRadius.circular(15.0)
+              )),
+
+              
+          widget.package?['company'] != null
               ? const Positioned(
-                  right: 10,
-                  top: 5,
-                  child: Icon(MaterialCommunityIcons.cube_send))
-              : const SizedBox.shrink(),
-          widget.destinationNumber == phoneNumber
-              ? const Positioned(
-                  right: 10,
-                  bottom: 5,
-                  child: Icon(
-                    MaterialCommunityIcons.truck_fast_outline,
-                    size: 20,
+                  bottom: 18,
+                  right: 16,
+                  child: SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white38,
+                      backgroundImage: AssetImage("assets/images/ups.png"),
+                    ),
                   ))
-              : const SizedBox.shrink()
+              : const SizedBox.shrink(),
+              
+          // widget.package?['destinationNumber'] == phoneNumber
+          //     ? const Positioned(
+          //         left: 16,
+          //         child: Icon(
+          //           MaterialCommunityIcons.truck_fast_outline,
+          //           size: 20,
+          //         ))
+          //     : const SizedBox.shrink()
         ],
       ),
     );
@@ -323,10 +352,10 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                           // color: Colors.white,
                           onPressed: () async {
                             try {
-                              if (widget.sendBy == uid) {
+                              if (widget.package?['sendBy'] == uid) {
                                 await FirebaseFirestore.instance
                                     .collection('courier')
-                                    .doc(widget.shipmentId)
+                                    .doc(widget.package?['shipmentId'])
                                     .delete();
                                 await Fluttertoast.showToast(
                                   msg: 'Shipment has been deleted',

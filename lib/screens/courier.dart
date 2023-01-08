@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,15 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:glass/glass.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/export_services.dart';
-import 'package:gofast/exports/exported_widgets.dart';
 import 'package:gofast/global/global_variables.dart';
-import 'package:gofast/screens/auth/login.dart';
-import 'package:gofast/widgets/courier/accepted.dart';
-import 'package:gofast/widgets/courier/delivered.dart';
-import 'package:gofast/widgets/courier/dispatched.dart';
-import 'package:gofast/widgets/courier/job.dart';
+import 'package:gofast/widgets/courier_streams/accepted.dart';
+import 'package:gofast/widgets/courier_streams/delivered.dart';
+import 'package:gofast/widgets/courier_streams/dispatched.dart';
+import 'package:gofast/widgets/courier_streams/job.dart';
+import 'package:gofast/widgets/courier_streams/picked.dart';
 import 'package:gofast/widgets/warehouse_stream.dart';
 import 'package:lottie/lottie.dart';
 
@@ -27,7 +29,7 @@ class CourierPage extends StatefulWidget {
 class _CourierPageState extends State<CourierPage>
     with TickerProviderStateMixin {
   late TabController _tabController = TabController(
-    length: 4,
+    length: 5,
     vsync: this,
   );
 
@@ -44,10 +46,11 @@ class _CourierPageState extends State<CourierPage>
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> _accepted;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _picked;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dispatched;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dropoff;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _jobStream;
-  late Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
+  late Future<QuerySnapshot> _warehouse;
 
   @override
   void initState() {
@@ -65,13 +68,22 @@ class _CourierPageState extends State<CourierPage>
         .collection('courier')
         .where('category', isEqualTo: category)
         .where('courierId', isEqualTo: _auth.currentUser!.uid)
+        .where('accepted', isEqualTo: true)
+        .where('intransit', isEqualTo: false)
+        .orderBy('createdAt', descending: true)
+        .snapshots();
+
+    _picked = FirebaseFirestore.instance
+        .collection('courier')
+        .where('category', isEqualTo: category)
+        .where('courierId', isEqualTo: _auth.currentUser!.uid)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: false)
         .orderBy('createdAt', descending: true)
         .snapshots();
 
-    _warehouse = FirebaseFirestore.instance.collection('warehouse').snapshots();
+    _warehouse = FirebaseFirestore.instance.collection('warehouse').get();
 
     _dispatched = FirebaseFirestore.instance
         .collection('courier')
@@ -156,7 +168,7 @@ class _CourierPageState extends State<CourierPage>
                         height: 40,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
-                            color: Colors.grey[300]),
+                            ),
                         child: TabBar(
                             controller: _tabController,
                             indicator: BoxDecoration(
@@ -166,22 +178,30 @@ class _CourierPageState extends State<CourierPage>
                               borderRadius: BorderRadius.circular(25),
                             ),
                             labelColor: Colors.white,
-                            labelStyle: Theme.of(context).textTheme.headline4,
+                            labelStyle: textStyle(12, Colors.black45, FontWeight.w600),
                             unselectedLabelColor: Colors.grey.withOpacity(0.7),
                             tabs: const [
                               Tab(
-                                text: "Available",
+                                text: "Jobs",
                               ),
                               Tab(
                                 text: "Accepted",
                               ),
                               Tab(
-                                text: "Dispatch",
+                                text: "Picked",
                               ),
                               Tab(
-                                text: "Delivered",
+                                text: "In-transit",
+                              ),
+                              Tab(
+                                text: "Dropped",
                               )
                             ]),
+                      ).asGlass(
+                        tintColor: Theme.of(context).dividerColor,
+                  clipBorderRadius: BorderRadius.circular(19.0),
+                  blurX: 8,
+                  blurY: 8
                       ),
                     ),
                     Expanded(
@@ -199,10 +219,15 @@ class _CourierPageState extends State<CourierPage>
                             // Dispatch
                             Column(
                               children: [
-                                Accepted(accepted: _accepted),
+                                Accepted(accepted: _accepted)
                               ],
                             ),
 
+                            Column(
+                              children: [
+                                Picked(picked: _picked),
+                              ],
+                            ),
                             // Transit
 
                             Column(
@@ -260,8 +285,7 @@ class _CourierPageState extends State<CourierPage>
               ),
               InkWell(
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
+                  // acceptedSheet();
                 },
                 child: Row(
                   children: [
@@ -435,7 +459,6 @@ class _CourierPageState extends State<CourierPage>
   }
 
   Future scanBarCode() async {
-    int progress = 2;
     String scanResult;
     try {
       scanResult = await FlutterBarcodeScanner.scanBarcode(
@@ -445,20 +468,268 @@ class _CourierPageState extends State<CourierPage>
     }
     if (!mounted) return;
 
-    setState(() {
-      this.scanResult = scanResult;
+    if (scanResult.contains("parcel")) {
+      setState(() {
+        var shipmentId = scanResult.substring(1, 37);
+        var progress = scanResult.substring(0, 1);
+        var status = int.parse(progress.toString());
 
-      final shipmentId = scanResult;
-      FirebaseFirestore.instance.collection('courier').doc(shipmentId).update({
-        'courierId': FirebaseAuth.instance.currentUser!.uid,
-        'courierNumber': phoneNumber,
-        'vehicle': plate,
-        'pickup': true,
-        'pickedAt': DateTime.now(),
-        'company': company,
-        'accepted': true,
-        'progress': progress,
+        status == 0
+            ? FirebaseFirestore.instance
+                .collection('courier')
+                .doc(shipmentId)
+                .update({
+                'courierId': FirebaseAuth.instance.currentUser!.uid,
+                'courierNumber': phoneNumber,
+                'vehicle': plate,
+                'company': company,
+                'accepted': true,
+                'progress': status + 1,
+              })
+            : () {};
+
+        status == 1 ? qrMethod(shipmentId, status) : () {};
+        status == 2 ? qrMethod(shipmentId, status) : () {};
+        status == 3 ? qrMethod(shipmentId, status) : () {};
       });
-    });
+    }
   }
+
+  Future<dynamic> qrMethod(String shipmentId, int status) {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black87,
+        context: context,
+        builder: (context) {
+          String? buttontxt;
+          if (status == 0) {
+            buttontxt = "accept this job";
+          } else if (status == 1) {
+            buttontxt = "pick-up parcel";
+          } else if (status == 2) {
+            buttontxt = "Start Delivering";
+          } else if (status == 3) {
+            buttontxt = "delivered";
+          }
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(7, 0, 7, 80),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.2,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      image: const DecorationImage(
+                          image: AssetImage("assets/images/bg.png"),
+                          fit: BoxFit.cover,
+                          opacity: 0.45),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(19),
+                      ),
+                      color: Colors.lightBlue.shade600),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(19),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "Welcome to Courier Center",
+                                style: Theme.of(context).textTheme.headline3,
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: TextButton.icon(
+                                    onPressed: () {
+                                      FirebaseFirestore.instance
+                                          .collection('courier')
+                                          .doc(shipmentId)
+                                          .update({
+                                        'courierId': FirebaseAuth
+                                            .instance.currentUser!.uid,
+                                        'courierNumber': phoneNumber,
+                                        'vehicle': plate,
+                                        'company': company,
+                                        'accepted': true,
+                                        'progress': status + 1,
+                                      });
+                                      Future.delayed(
+                                              const Duration(microseconds: 2000))
+                                          .then((value) =>
+                                              Navigator.pop(context));
+                                    },
+                                    icon: const Icon(
+                                      MaterialCommunityIcons
+                                          .checkbox_marked_circle_outline,
+                                      color: Color(0xFFFFFFFF),
+                                    ),
+                                    label: Text(
+                                      buttontxt!.toUpperCase(),
+                                      style: textStyle(
+                                          14, Colors.white, FontWeight.w500),
+                                    )),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -20,
+                right: MediaQuery.of(context).size.width * 0.45,
+                child: const SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white38,
+                    backgroundImage: AssetImage("assets/images/user.png"),
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  // Future<dynamic> acceptedSheet() {
+  //   return showModalBottomSheet(
+  //       isScrollControlled: true,
+  //       backgroundColor: Colors.transparent,
+  //       barrierColor: Colors.black87,
+  //       context: context,
+  //       builder: (context) {
+  //         return Stack(
+  //           clipBehavior: Clip.none,
+  //           children: [
+  //             Padding(
+  //               padding: const EdgeInsets.fromLTRB(7, 0, 7, 80),
+  //               child: Container(
+  //                 height: MediaQuery.of(context).size.height * 0.2,
+  //                 width: MediaQuery.of(context).size.width,
+  //                 decoration: BoxDecoration(
+  //                     image: const DecorationImage(
+  //                         image: AssetImage("assets/images/bg.png"),
+  //                         fit: BoxFit.cover,
+  //                         opacity: 0.45),
+  //                     borderRadius: const BorderRadius.all(
+  //                       Radius.circular(19),
+  //                     ),
+  //                     color: Colors.lightBlue.shade600),
+  //                 child: Column(
+  //                   children: [
+  //                     Padding(
+  //                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+  //                       child: Container(
+  //                         decoration: const BoxDecoration(
+  //                           borderRadius: BorderRadius.all(
+  //                             Radius.circular(19),
+  //                           ),
+  //                         ),
+  //                         child: Column(
+  //                           crossAxisAlignment: CrossAxisAlignment.center,
+  //                           mainAxisAlignment: MainAxisAlignment.center,
+  //                           children: [
+  //                             const SizedBox(
+  //                               height: 20,
+  //                             ),
+  //                             Text(
+  //                               "Welcome to Courier Center",
+  //                               style: Theme.of(context).textTheme.headline3,
+  //                             ),
+  //                             const SizedBox(
+  //                               height: 5,
+  //                             ),
+  //                             Text(
+  //                               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
+  //                               style: Theme.of(context).textTheme.bodyMedium,
+  //                             ),
+  //                             const SizedBox(
+  //                               height: 10,
+  //                             ),
+  //                             Align(
+  //                               alignment: Alignment.bottomRight,
+  //                               child: TextButton.icon(
+  //                                   onPressed: () {
+  //                                     FirebaseFirestore.instance
+  //                                         .collection('courier')
+  //                                         .doc(shipmentId)
+  //                                         .update({
+  //                                       'courierId': FirebaseAuth
+  //                                           .instance.currentUser!.uid,
+  //                                       'courierNumber': phoneNumber,
+  //                                       'vehicle': plate,
+  //                                       'company': company,
+  //                                       'accepted': true,
+  //                                       'progress': status + 1,
+  //                                     });
+  //                                   },
+  //                                   icon: const Icon(
+  //                                     MaterialCommunityIcons
+  //                                         .checkbox_marked_circle_outline,
+  //                                     color: Color(0xFFFFFFFF),
+  //                                   ),
+  //                                   label: Text(
+  //                                     "Pick-up".toUpperCase(),
+  //                                     style: textStyle(
+  //                                         14, Colors.white, FontWeight.w500),
+  //                                   )),
+  //                             ),
+  //                             const SizedBox(
+  //                               height: 10,
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     )
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //             Positioned(
+  //               top: -20,
+  //               right: MediaQuery.of(context).size.width * 0.45,
+  //               child: const SizedBox(
+  //                 height: 50,
+  //                 width: 50,
+  //                 child: CircleAvatar(
+  //                   backgroundColor: Colors.white38,
+  //                   backgroundImage: AssetImage("assets/images/user.png"),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       });
+
+  // }
+
 }

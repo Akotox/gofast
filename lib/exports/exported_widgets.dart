@@ -1,10 +1,3 @@
 export 'package:gofast/widgets/shipment_widget.dart';
 export 'package:gofast/widgets/empty.dart';
 export 'package:gofast/widgets/shipment_shimmer.dart';
-export 'package:gofast/widgets/shipments/in_delivered.dart';
-export 'package:gofast/widgets/shipments/in_dispatch.dart';
-export 'package:gofast/widgets/shipments/in_processing.dart';
-export 'package:gofast/widgets/shipments/in_transit.dart';
-export 'package:gofast/widgets/shipments/out_dispatch.dart';
-export 'package:gofast/widgets/shipments/out_processing.dart';
-export 'package:gofast/widgets/shipments/out_transit.dart';

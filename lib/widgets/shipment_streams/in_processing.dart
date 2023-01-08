@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -6,13 +5,15 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
-class OutDelivered extends StatelessWidget {
-  const OutDelivered({
+class Processing extends StatelessWidget {
+  const Processing({
     Key? key,
-    required Stream<QuerySnapshot<Map<String, dynamic>>> deliveredStream,
-  }) : _deliveredStream = deliveredStream, super(key: key);
+    required Stream<QuerySnapshot<Map<String, dynamic>>>
+        processingReceiverStream,
+  })  : _processingReceiverStream = processingReceiverStream,
+        super(key: key);
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _deliveredStream;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _processingReceiverStream;
 
   @override
   Widget build(BuildContext context) {
@@ -20,20 +21,18 @@ class OutDelivered extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _deliveredStream,
+            stream: _processingReceiverStream,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.none) {
+              if (snapshot.connectionState == ConnectionState.waiting ||
+                  snapshot.connectionState == ConnectionState.none) {
                 return const ShipmentShimmer();
-
               } else if (snapshot.connectionState == ConnectionState.active) {
                 if (snapshot.data?.docs.isNotEmpty == true) {
                   return ListView.builder(
                     itemCount: snapshot.data?.docs.length,
                     shrinkWrap: true,
-                    // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-
-
+                      var package = snapshot.data?.docs[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom:8.0, right: 8, left: 8),
                         child: ClipRRect(
@@ -69,6 +68,7 @@ class OutDelivered extends StatelessWidget {
                             ),
                       
                             child: ShipmentWidget(
+                              package: package,
                               shipmentId: snapshot.data?.docs[index]['shipmentId'],
                               category: snapshot.data?.docs[index]['category'],
                               destination: snapshot.data?.docs[index]
@@ -93,18 +93,29 @@ class OutDelivered extends StatelessWidget {
                           ),
                         ),
                       );
-
+                    
                     },
                   );
                 } else {
-                  return  const Empty();
+                  return const Empty();
                 }
               }
-              return const CircularProgressIndicator();
-
+              return const ErrorWid();
             },
           ),
         ));
   }
 }
 
+class ErrorWid extends StatelessWidget {
+  const ErrorWid({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Image.asset('assets/images/digi.png'),
+    );
+  }
+}

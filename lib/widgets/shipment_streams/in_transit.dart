@@ -5,14 +5,13 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
-
-class OutDispatch extends StatelessWidget {
-  const OutDispatch({
+class Transit extends StatelessWidget {
+  const Transit({
     Key? key,
-    required Stream<QuerySnapshot<Map<String, dynamic>>> pickStream,
-  }) : _pickStream = pickStream, super(key: key);
+    required Stream<QuerySnapshot<Map<String, dynamic>>> intransitStream,
+  }) : _intransitStream = intransitStream, super(key: key);
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> _pickStream;
+  final Stream<QuerySnapshot<Map<String, dynamic>>> _intransitStream;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,7 @@ class OutDispatch extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: _pickStream,
+            stream: _intransitStream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting || snapshot.connectionState == ConnectionState.none) {
                 return const ShipmentShimmer();
@@ -32,8 +31,7 @@ class OutDispatch extends StatelessWidget {
                     shrinkWrap: true,
                     // physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
-
-
+                      var package = snapshot.data?.docs[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom:8.0, right: 8, left: 8),
                         child: ClipRRect(
@@ -69,6 +67,7 @@ class OutDispatch extends StatelessWidget {
                             ),
                       
                             child: ShipmentWidget(
+                              package: package,
                               shipmentId: snapshot.data?.docs[index]['shipmentId'],
                               category: snapshot.data?.docs[index]['category'],
                               destination: snapshot.data?.docs[index]
@@ -93,8 +92,6 @@ class OutDispatch extends StatelessWidget {
                           ),
                         ),
                       );
-                    
-
                     },
                   );
                 } else {
@@ -108,3 +105,4 @@ class OutDispatch extends StatelessWidget {
         ));
   }
 }
+
