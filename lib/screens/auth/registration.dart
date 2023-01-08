@@ -132,6 +132,9 @@ class _RegisterState extends State<Register> with TickerProviderStateMixin {
           'courierVerification': false,
           'followers': [],
           'following': [],
+          ///TOD0: GENERATE USER TOKEN
+          "token": "null",
+          "os": Platform.operatingSystem,
         });
         Navigator.canPop(context) ? Navigator.pop(context) : null;
       } catch (error) {

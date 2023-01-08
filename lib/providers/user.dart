@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:gofast/models/user_model.dart';
 
-class ShipmentProvider with ChangeNotifier{
- DocumentSnapshot?  user;
+class UserProvider with ChangeNotifier{
+ UserData?  user;
 
 
- getShipment(userDetails){
+ getMuhu(userDetails){
   user = userDetails;
   notifyListeners();
  }

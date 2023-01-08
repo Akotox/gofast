@@ -39,11 +39,12 @@ class GoFastaAppTheme {
             ),
           ),
           disabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(19)),
+            borderRadius: BorderRadius.all(Radius.circular(25)),
             borderSide: BorderSide(
               color: Colors.black26,
             ),
           )
+          
         ),
       dividerColor: const Color(0xFF03608F),
       progressIndicatorTheme: ProgressIndicatorThemeData(

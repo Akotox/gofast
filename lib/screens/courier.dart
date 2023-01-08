@@ -11,6 +11,9 @@ import 'package:glass/glass.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/global/global_variables.dart';
+import 'package:gofast/models/user_model.dart';
+import 'package:gofast/providers/user.dart';
+import 'package:gofast/services/firebase_services.dart';
 import 'package:gofast/widgets/courier_streams/accepted.dart';
 import 'package:gofast/widgets/courier_streams/delivered.dart';
 import 'package:gofast/widgets/courier_streams/dispatched.dart';
@@ -18,9 +21,12 @@ import 'package:gofast/widgets/courier_streams/job.dart';
 import 'package:gofast/widgets/courier_streams/picked.dart';
 import 'package:gofast/widgets/warehouse_stream.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class CourierPage extends StatefulWidget {
-  const CourierPage({super.key});
+  const CourierPage({
+    super.key,
+  });
 
   @override
   State<CourierPage> createState() => _CourierPageState();
@@ -35,7 +41,7 @@ class _CourierPageState extends State<CourierPage>
 
   DateTime now = DateTime.now();
   String greeting = "";
-
+  FirebaseServices _services = FirebaseServices();
   String? category;
   String? scanResult;
   String? plate;
@@ -50,12 +56,13 @@ class _CourierPageState extends State<CourierPage>
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dispatched;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dropoff;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _jobStream;
-  late Future<QuerySnapshot> _warehouse;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
 
   @override
   void initState() {
     super.initState();
     getGreeting();
+
     _jobStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
@@ -83,7 +90,7 @@ class _CourierPageState extends State<CourierPage>
         .orderBy('createdAt', descending: true)
         .snapshots();
 
-    _warehouse = FirebaseFirestore.instance.collection('warehouse').get();
+    _warehouse = FirebaseFirestore.instance.collection('warehouse').snapshots();
 
     _dispatched = FirebaseFirestore.instance
         .collection('courier')
@@ -107,34 +114,29 @@ class _CourierPageState extends State<CourierPage>
         .orderBy('createdAt', descending: true)
         .snapshots();
 
-    getMyData();
+    getDataOnce();
   }
 
-  void getMyData() async {
-    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    if (userDoc == null) {
-      return;
+  void getDataOnce() async {
+    final ref = _services.users.doc(_auth.currentUser?.uid).withConverter(
+          fromFirestore: UserData.fromFirestore,
+          toFirestore: (UserData userdata, _) => userdata.toFirestore(),
+        );
+    final docSnap = await ref.get();
+    final thisUser = docSnap.data(); // Convert to City object
+    if (thisUser != null) {
+      setState(() {
+        munhu = thisUser;
+      });
+      print(thisUser.name);
     } else {
-      if (mounted) {
-        setState(() {
-          phoneNumber = userDoc.get('phoneNumber');
-          location = userDoc.get('Address');
-          name = userDoc.get('name');
-          userImage = userDoc.get("userImage");
-          email = userDoc.get("email");
-          idVerification = userDoc.get('IdVerification');
-          company = userDoc.get('company');
-          plate = userDoc.get('plate');
-        });
-      }
+      print("No such document.");
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Theme.of(context).iconTheme.color,
       appBar: AppBar(
@@ -167,8 +169,8 @@ class _CourierPageState extends State<CourierPage>
                       child: Container(
                         height: 40,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                            ),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
                         child: TabBar(
                             controller: _tabController,
                             indicator: BoxDecoration(
@@ -178,7 +180,8 @@ class _CourierPageState extends State<CourierPage>
                               borderRadius: BorderRadius.circular(25),
                             ),
                             labelColor: Colors.white,
-                            labelStyle: textStyle(12, Colors.black45, FontWeight.w600),
+                            labelStyle:
+                                textStyle(12, Colors.black45, FontWeight.w600),
                             unselectedLabelColor: Colors.grey.withOpacity(0.7),
                             tabs: const [
                               Tab(
@@ -198,11 +201,10 @@ class _CourierPageState extends State<CourierPage>
                               )
                             ]),
                       ).asGlass(
-                        tintColor: Theme.of(context).dividerColor,
-                  clipBorderRadius: BorderRadius.circular(19.0),
-                  blurX: 8,
-                  blurY: 8
-                      ),
+                          tintColor: Theme.of(context).dividerColor,
+                          clipBorderRadius: BorderRadius.circular(19.0),
+                          blurX: 8,
+                          blurY: 8),
                     ),
                     Expanded(
                       child: TabBarView(
@@ -218,9 +220,7 @@ class _CourierPageState extends State<CourierPage>
 
                             // Dispatch
                             Column(
-                              children: [
-                                Accepted(accepted: _accepted)
-                              ],
+                              children: [Accepted(accepted: _accepted)],
                             ),
 
                             Column(
@@ -366,7 +366,7 @@ class _CourierPageState extends State<CourierPage>
                       Padding(
                         padding: const EdgeInsets.only(left: 2.0, right: 16),
                         child: Text(
-                          "$greeting  $name",
+                          "$greeting  ${munhu?.name}",
                           style: textStyle(16, Colors.white, FontWeight.bold),
                         ),
                       ),
@@ -576,8 +576,8 @@ class _CourierPageState extends State<CourierPage>
                                         'accepted': true,
                                         'progress': status + 1,
                                       });
-                                      Future.delayed(
-                                              const Duration(microseconds: 2000))
+                                      Future.delayed(const Duration(
+                                              microseconds: 2000))
                                           .then((value) =>
                                               Navigator.pop(context));
                                     },

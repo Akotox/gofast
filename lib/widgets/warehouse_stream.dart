@@ -2,25 +2,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
+import 'package:gofast/widgets/courier_streams/job.dart';
 import 'package:gofast/widgets/warehouse.dart';
 
 class StorageStream extends StatelessWidget {
   const StorageStream({
     Key? key,
-    required Future<QuerySnapshot> warehouse,
+    required Stream<QuerySnapshot<Map<String, dynamic>>> warehouse,
   })  : _warehouse = warehouse,
         super(key: key);
 
   // final Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
-  final Future<QuerySnapshot> _warehouse;
+  final Stream<QuerySnapshot<Map<String, dynamic>>>  _warehouse;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.fromLTRB(0.0, 15, 0, 10),
         child: Container(
-          child: FutureBuilder<QuerySnapshot>(
-            future: _warehouse,
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: _warehouse,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting ||
                   snapshot.connectionState == ConnectionState.none) {
@@ -47,7 +48,7 @@ class StorageStream extends StatelessWidget {
                   return const Empty();
                 }
               }
-              return const CircularProgressIndicator();
+              return const ErrorWid();
             },
           ),
         ));

@@ -35,10 +35,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   String? category;
   String? results;
-  String? plate;
-  String? phoneNumber;
-  String? company;
-  bool? idVerification;
   bool? courierVerification;
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -50,13 +46,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late Stream<QuerySnapshot<Map<String, dynamic>>> _intransitStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveredStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveryStream;
-  late Future<QuerySnapshot> _warehouse;
+    late Stream<QuerySnapshot<Map<String, dynamic>>>  _warehouse;
 
   @override
   void initState() {
     super.initState();
 
-    _warehouse = FirebaseFirestore.instance.collection('warehouse').get();
+    _warehouse = FirebaseFirestore.instance.collection('warehouse').snapshots();
+
 
     _processingStream = FirebaseFirestore.instance
         .collection('courier')
@@ -70,7 +67,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _processingReceiverStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
         .where('pickup', isEqualTo: false)
         .where('accepted', isEqualTo: false)
         .orderBy('createdAt', descending: true)
@@ -89,7 +86,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _pickStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: false)
@@ -110,7 +107,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _intransitStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: true)
@@ -132,7 +129,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _deliveryStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: true)
@@ -140,31 +137,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         .orderBy('createdAt', descending: true)
         .snapshots();
 
-    getMyData();
+   
   }
 
-  void getMyData() async {
-    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    if (userDoc == null) {
-      return;
-    } else {
-      if (mounted) {
-        setState(() {
-          phoneNumber = userDoc.get('phoneNumber');
-          location = userDoc.get('Address');
-          name = userDoc.get('name');
-          userImage = userDoc.get("userImage");
-          email = userDoc.get("email");
-          idVerification = userDoc.get('IdVerification');
-          company = userDoc.get('company');
-          plate = userDoc.get('plate');
-        });
-      }
-    }
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -769,7 +745,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(10))),
                                   child: Text(
-                                    name,
+                                    "${munhu!.name}",
                                     style:
                                         Theme.of(context).textTheme.headline3,
                                   )),
@@ -789,7 +765,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 height:
                                     MediaQuery.of(context).size.height * 0.2,
                                 child: BarcodeWidget(
-                                  data: "$phoneNumber.$name",
+                                  data: "${munhu!.phoneNumber}.${munhu!.name}",
                                   barcode: Barcode.code128(),
                                   drawText: false,
                                   padding: const EdgeInsets.only(
@@ -838,11 +814,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             .doc(shipmentId)
             .update({
           'courierId': FirebaseAuth.instance.currentUser!.uid,
-          'courierNumber': phoneNumber,
-          'vehicle': plate,
+          'courierNumber': munhu!.phoneNumber,
+          'vehicle': munhu!.plate,
           'pickup': true,
           'pickedAt': DateTime.now(),
-          'company': company,
+          'company': munhu!.company,
           'accepted': true,
           'progress': 1,
         });

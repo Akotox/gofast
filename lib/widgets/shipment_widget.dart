@@ -65,6 +65,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
 
   @override
   Widget build(BuildContext context) {
+    
     var _package = Provider.of<ShipmentProvider>(context);
     int activeStep = widget.package?["progress"];
     var updateTime = DateFormat.yMMMd()
@@ -90,6 +91,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) => ShipmentDetailsScreen(
+                  
                       pickupAd: widget.pickupAd,
                       shipmentId: widget.shipmentId,
                       destination: widget.destination,
@@ -111,7 +113,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                   image: AssetImage("assets/images/bg.png"),
                   fit: BoxFit.cover,
                   opacity: 0.3),
-              color: widget.destinationNumber == phoneNumber
+              color: widget.destinationNumber == munhu!.phoneNumber
                   ? Colors.white70
                   : Colors.white70,
               boxShadow: [
@@ -281,14 +283,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                   ))
               : const SizedBox.shrink(),
               
-          // widget.package?['destinationNumber'] == phoneNumber
-          //     ? const Positioned(
-          //         left: 16,
-          //         child: Icon(
-          //           MaterialCommunityIcons.truck_fast_outline,
-          //           size: 20,
-          //         ))
-          //     : const SizedBox.shrink()
+        
         ],
       ),
     );

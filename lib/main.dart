@@ -12,7 +12,6 @@ Future<void> main() async {
   runApp(MultiProvider(
     providers: [
           ListenableProvider (create: (_) => ShipmentProvider()),
-          
         ],
     child: const MyApp()));
 }

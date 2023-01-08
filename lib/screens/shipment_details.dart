@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_services.dart';
-import 'package:gofast/global/global_variables.dart';
+
 import 'package:gofast/providers/shipment.dart';
 import 'package:gofast/screens/mainscreen_courier.dart';
 import 'package:provider/provider.dart';
@@ -35,44 +35,14 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String? scanResult;
-  String? plate;
-  String? phoneNumber;
-  String? company;
-  bool? idVerification;
-  bool? courierVerification;
 
   late String whatsappNo = "";
   late String message = "";
- 
+  String url = "";
 
   @override
   void initState() {
     super.initState();
-
-    getMyData();
-  }
-
-  void getMyData() async {
-    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    if (userDoc == null) {
-      return;
-    } else {
-      if (mounted) {
-        setState(() {
-          phoneNumber = userDoc.get('phoneNumber');
-          location = userDoc.get('Address');
-          name = userDoc.get('name');
-          userImage = userDoc.get("userImage");
-          email = userDoc.get("email");
-          idVerification = userDoc.get('IdVerification');
-          company = userDoc.get('company');
-          plate = userDoc.get('plate');
-        });
-      }
-    }
   }
 
   @override
@@ -82,7 +52,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
     setState(() {
       parcelId = data?['shipmentId'];
     });
-   int activeStep = data?['progress'];
+    int activeStep = data?['progress'];
     return Scaffold(
       backgroundColor: Theme.of(context).iconTheme.color,
       appBar: AppBar(
@@ -554,14 +524,13 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
 
   Future<dynamic> qrMethod() {
     DateTime now = DateTime.now();
-    
+
     return showModalBottomSheet(
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         barrierColor: Colors.black87,
         context: context,
         builder: (context) {
-          
           String? buttontxt;
           if (widget.progress == 0) {
             buttontxt = "accept this job";
@@ -570,7 +539,9 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
           } else if (widget.progress == 2) {
             buttontxt = "Start Delivering";
           } else if (widget.progress == 3) {
-            buttontxt = "delivered";
+            buttontxt = "In-transit";
+          } else if (widget.progress == 4) {
+            buttontxt = "Delivered";
           }
 
           return Stack(
@@ -632,9 +603,10 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                               .update({
                                               'courierId': FirebaseAuth
                                                   .instance.currentUser!.uid,
-                                              'courierNumber': phoneNumber,
-                                              'vehicle': plate,
-                                              'company': company,
+                                              'courierNumber':
+                                                  munhu!.phoneNumber,
+                                              'vehicle': munhu!.plate,
+                                              'company': munhu!.company,
                                               'updatedTime':
                                                   "${now.month} -${now.day}  ${now.hour}:${now.minute}",
                                               'accepted': true,
@@ -648,9 +620,10 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                               .update({
                                               'courierId': FirebaseAuth
                                                   .instance.currentUser!.uid,
-                                              'courierNumber': phoneNumber,
-                                              'vehicle': plate,
-                                              'company': company,
+                                              'courierNumber':
+                                                  munhu!.phoneNumber,
+                                              'vehicle': munhu!.plate,
+                                              'company': munhu!.company,
                                               'accepted': true,
                                               'progress': widget.progress + 1,
                                             })
@@ -662,9 +635,10 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                               .update({
                                               'courierId': FirebaseAuth
                                                   .instance.currentUser!.uid,
-                                              'courierNumber': phoneNumber,
-                                              'vehicle': plate,
-                                              'company': company,
+                                              'courierNumber':
+                                                  munhu!.phoneNumber,
+                                              'vehicle': munhu!.plate,
+                                              'company': munhu!.company,
                                               'accepted': true,
                                               'progress': widget.progress + 1,
                                             })
@@ -955,7 +929,7 @@ class Time extends StatelessWidget {
 void doNothing(BuildContext context) {
   FirebaseFirestore.instance.collection('courier').doc(parcelId).update({
     'courierId': FirebaseAuth.instance.currentUser!.uid,
-    'courierNumber': phoneNumber,
+    'courierNumber': munhu!.phoneNumber,
     'vehicle': "plate",
     'company': "company",
     'accepted': true,

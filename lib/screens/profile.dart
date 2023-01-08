@@ -52,8 +52,8 @@ class _ProfileState extends State<Profile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(name, style: Theme.of(context).textTheme.headline3,),
-                              Text(email, style: Theme.of(context).textTheme.headline6,)
+                              Text("${munhu!.name}", style: Theme.of(context).textTheme.headline3,),
+                              Text("${munhu!.email}", style: Theme.of(context).textTheme.headline6,)
                             ],
                           ),
                         ),

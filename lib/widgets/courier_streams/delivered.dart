@@ -68,6 +68,7 @@ class DropOff extends StatelessWidget {
                             ),
                       
                             child: ShipmentWidget(
+                              package: package,
                               shipmentId: snapshot.data?.docs[index]['shipmentId'],
                               category: snapshot.data?.docs[index]['category'],
                               destination: snapshot.data?.docs[index]

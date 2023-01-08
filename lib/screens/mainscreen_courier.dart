@@ -1,11 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/global/global_variables.dart';
+import 'package:gofast/models/user_model.dart';
 import 'package:gofast/screens/courier.dart';
 import 'package:gofast/screens/profile.dart';
+import 'package:gofast/services/firebase_services.dart';
 
 class MainCourier extends StatefulWidget {
-  const MainCourier({Key? key}) : super(key: key);
+  const MainCourier({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<MainCourier> createState() => _MainCourierState();
@@ -13,6 +19,15 @@ class MainCourier extends StatefulWidget {
 
 class _MainCourierState extends State<MainCourier> {
   int pageIndex = 1;
+  FirebaseServices _services = FirebaseServices();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    
+  }
+
 
   List<Widget> pageList = <Widget>[
     const HomePage(),
@@ -49,7 +64,6 @@ class _MainCourierState extends State<MainCourier> {
                       : const Icon(MaterialCommunityIcons.truck_fast_outline),
                   label: 'Deliveries',
                 ),
-                
                 BottomNavigationBarItem(
                   icon: pageIndex == 2
                       ? const Icon(Ionicons.notifications_circle)
