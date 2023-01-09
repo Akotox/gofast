@@ -17,6 +17,8 @@ import 'package:gofast/widgets/shipment_streams/out_dispatch.dart';
 import 'package:gofast/widgets/shipment_streams/out_processing.dart';
 import 'package:gofast/widgets/shipment_streams/out_transit.dart';
 import 'package:gofast/widgets/warehouse_stream.dart';
+import 'package:intl/intl.dart';
+
 
 import 'package:lottie/lottie.dart';
 
@@ -807,22 +809,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (!mounted) return;
 
     if (scanResult.contains("parcel")) {
-      setState(() {
-        final shipmentId = scanResult.substring(0, 28);
-        FirebaseFirestore.instance
-            .collection('courier')
-            .doc(shipmentId)
-            .update({
-          'courierId': FirebaseAuth.instance.currentUser!.uid,
-          'courierNumber': munhu!.phoneNumber,
-          'vehicle': munhu!.plate,
-          'pickup': true,
-          'pickedAt': DateTime.now(),
-          'company': munhu!.company,
-          'accepted': true,
-          'progress': 1,
-        });
-      });
+      var date = DateFormat("MM-dd kk:mm").format(DateTime.now());
+
     }
   }
 }

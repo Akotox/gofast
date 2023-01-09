@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/widgets/shipment_streams/delivery_page.dart';
+import 'package:intl/intl.dart';
+
 
 
 import 'package:lottie/lottie.dart';
@@ -33,7 +36,7 @@ class _DeliveryBoyState extends State<DeliveryBoy> {
   @override
   void initState() {
     super.initState();
-    getMyData();
+    // getMyData();
 
     _deliveries = FirebaseFirestore.instance
         .collection('courier')
@@ -44,30 +47,7 @@ class _DeliveryBoyState extends State<DeliveryBoy> {
         .snapshots();
   }
 
-  void getMyData() async {
-    try {
-      _isLoading = true;
-      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get();
-      if (userDoc == null) {
-        return;
-      } else {
-        setState(() {
-          phoneNumber = userDoc.get('phoneNumber');
-          idVerification = userDoc.get('IdVerification');
-          company = userDoc.get('company');
-          plate = userDoc.get('plate');
-          userImage = userDoc.get('userImage');
-          address = userDoc.get('Address');
-        });
-      }
-    } catch (error) {
-    } finally {
-      _isLoading = false;
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -211,19 +191,21 @@ class _DeliveryBoyState extends State<DeliveryBoy> {
     if (!mounted) return;
 
     setState(() {
+      var date = DateFormat("MM-dd kk:mm").format(DateTime.now());
       this.scanResult = scanResult;
 
       final shipmentId = scanResult;
       FirebaseFirestore.instance.collection('courier').doc(shipmentId).update({
         'courierId': FirebaseAuth.instance.currentUser!.uid,
-        'courierNumber': phoneNumber,
-        'vehicle': plate,
+        'courierNumber': munhu!.phoneNumber,
+        'vehicle': munhu!.plate,
         'pickup': true,
         'pickedAt': DateTime.now(),
-        'company': company,
+        'company': munhu!.company,
         'accepted': true,
-        'progress': 0.50,
+        'progress': 0,
       });
     });
+  
   }
 }

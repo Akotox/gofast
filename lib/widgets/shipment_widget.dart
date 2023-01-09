@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/global/global_methods.dart';
-import 'package:gofast/global/global_variables.dart';
 import 'package:gofast/providers/shipment.dart';
 import 'package:gofast/screens/shipment_details.dart';
 import 'package:intl/intl.dart';
@@ -28,7 +27,7 @@ class ShipmentWidget extends StatefulWidget {
   final bool intransit;
   final bool delivered;
   final bool accepted;
-  final int createdAt;
+  final String createdAt;
   final QueryDocumentSnapshot<Map<String, dynamic>>? package;
 
   // final double startLat;
@@ -65,24 +64,24 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    
+  
     var _package = Provider.of<ShipmentProvider>(context);
     int activeStep = widget.package?["progress"];
-    var updateTime = DateFormat.yMMMd()
-        .format(DateTime.fromMicrosecondsSinceEpoch(widget.createdAt));
-    var _today = DateFormat.yMMMd().format(DateTime.fromMicrosecondsSinceEpoch(
-        DateTime.now().microsecondsSinceEpoch));
+    // var updateTime = DateFormat.yMMMd()
+    //     .format(DateTime.fromMicrosecondsSinceEpoch(widget.package?['createAt']));
+    // var _today = DateFormat.yMMMd().format(DateTime.fromMicrosecondsSinceEpoch(
+    //     DateTime.now().microsecondsSinceEpoch));
 
-    String lastUpdateTime;
-    //04.04.93
+    // String lastUpdateTime;
+    // //04.04.93
 
-    if (updateTime == _today) {
-      lastUpdateTime = DateFormat('M/d @ hh:mm')
-          .format(DateTime.fromMicrosecondsSinceEpoch(widget.createdAt));
-      //  10:56
-    } else {
-      lastUpdateTime = updateTime.toString();
-    }
+    // if (updateTime == _today) {
+    //   lastUpdateTime = DateFormat('M/d @ hh:mm')
+    //       .format(DateTime.fromMicrosecondsSinceEpoch(widget.createdAt));
+    //   //  10:56
+    // } else {
+    //   lastUpdateTime = updateTime.toString();
+    // }
 
     return InkWell(
       onTap: () {
@@ -91,7 +90,6 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
             context,
             MaterialPageRoute(
                 builder: (context) => ShipmentDetailsScreen(
-                  
                       pickupAd: widget.pickupAd,
                       shipmentId: widget.shipmentId,
                       destination: widget.destination,
@@ -113,9 +111,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                   image: AssetImage("assets/images/bg.png"),
                   fit: BoxFit.cover,
                   opacity: 0.3),
-              color: widget.destinationNumber == munhu!.phoneNumber
-                  ? Colors.white70
-                  : Colors.white70,
+              color: Colors.white70,
               boxShadow: [
                 BoxShadow(
                   color: Theme.of(context).shadowColor,
@@ -192,7 +188,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                           width: 5,
                         ),
                         Text(
-                          "Last updated : $lastUpdateTime",
+                          "Last updated : ${widget.package?['update']}",
                           style: Theme.of(context).textTheme.headline6,
                         ),
                       ],
@@ -238,7 +234,6 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
               ],
             ),
           ),
-         
           Positioned(
               top: 5,
               right: 16,
@@ -258,17 +253,14 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                       size: 15,
                     ),
                     Text(
-                      "07-01  11:19  | 24 hrs",
+                      "${widget.package?['createdAt']} | 24 HRS",
                       style: textStyle(12, Colors.black45, FontWeight.w600),
                     ),
                   ],
                 ),
               ).asGlass(
-                tintColor: Theme.of(context).dividerColor,
-                  clipBorderRadius: BorderRadius.circular(15.0)
-              )),
-
-              
+                  tintColor: Theme.of(context).dividerColor,
+                  clipBorderRadius: BorderRadius.circular(15.0))),
           widget.package?['company'] != null
               ? const Positioned(
                   bottom: 18,
@@ -282,8 +274,6 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                     ),
                   ))
               : const SizedBox.shrink(),
-              
-        
         ],
       ),
     );

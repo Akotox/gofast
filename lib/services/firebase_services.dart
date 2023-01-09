@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FirebaseServices {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference categories =
       FirebaseFirestore.instance.collection('categories');
@@ -32,4 +34,8 @@ class FirebaseServices {
     DocumentSnapshot doc = await products.doc(id).get();
     return doc;
   }
+
+
+
+
 }

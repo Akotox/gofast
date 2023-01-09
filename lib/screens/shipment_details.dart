@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_services.dart';
-
+import 'package:intl/intl.dart';
 import 'package:gofast/providers/shipment.dart';
 import 'package:gofast/screens/mainscreen_courier.dart';
 import 'package:provider/provider.dart';
@@ -52,6 +52,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
     setState(() {
       parcelId = data?['shipmentId'];
     });
+
     int activeStep = data?['progress'];
     return Scaffold(
       backgroundColor: Theme.of(context).iconTheme.color,
@@ -523,7 +524,8 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
   }
 
   Future<dynamic> qrMethod() {
-    DateTime now = DateTime.now();
+    var date = DateFormat("MM-dd kk:mm").format(DateTime.now()).toString();
+    var update = DateFormat("MMM d @ kk:mm").format(DateTime.now());
 
     return showModalBottomSheet(
         isScrollControlled: true,
@@ -596,57 +598,70 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                 alignment: Alignment.bottomRight,
                                 child: TextButton.icon(
                                     onPressed: () {
-                                      widget.progress == 0
-                                          ? FirebaseFirestore.instance
-                                              .collection('courier')
-                                              .doc(widget.shipmentId)
-                                              .update({
-                                              'courierId': FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                              'courierNumber':
-                                                  munhu!.phoneNumber,
-                                              'vehicle': munhu!.plate,
-                                              'company': munhu!.company,
-                                              'updatedTime':
-                                                  "${now.month} -${now.day}  ${now.hour}:${now.minute}",
-                                              'accepted': true,
-                                              'progress': widget.progress + 1,
-                                            })
-                                          : () {};
-                                      widget.progress == 1
-                                          ? FirebaseFirestore.instance
-                                              .collection('courier')
-                                              .doc(widget.shipmentId)
-                                              .update({
-                                              'courierId': FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                              'courierNumber':
-                                                  munhu!.phoneNumber,
-                                              'vehicle': munhu!.plate,
-                                              'company': munhu!.company,
-                                              'accepted': true,
-                                              'progress': widget.progress + 1,
-                                            })
-                                          : () {};
-                                      widget.progress == 2
-                                          ? FirebaseFirestore.instance
-                                              .collection('courier')
-                                              .doc(widget.shipmentId)
-                                              .update({
-                                              'courierId': FirebaseAuth
-                                                  .instance.currentUser!.uid,
-                                              'courierNumber':
-                                                  munhu!.phoneNumber,
-                                              'vehicle': munhu!.plate,
-                                              'company': munhu!.company,
-                                              'accepted': true,
-                                              'progress': widget.progress + 1,
-                                            })
-                                          : () {};
-                                      Future.delayed(const Duration(
-                                              microseconds: 2000))
-                                          .then((value) =>
-                                              Navigator.pop(context));
+                                      if (widget.progress == 0) {
+                                        FirebaseFirestore.instance
+                                            .collection('courier')
+                                            .doc(parcelId)
+                                            .update({
+                                          'courierId': FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                          'courierNumber': munhu!.phoneNumber,
+                                          'vehicle': munhu!.plate,
+                                          'company': munhu!.company,
+                                          'update': update,
+                                          'image': munhu!.userImage,
+                                          'accepted_at': date,
+                                          'createdAt': date,
+                                          'accepted': true,
+                                          'progress': widget.progress + 1,
+                                        });
+                                        Future.delayed(const Duration(
+                                                microseconds: 2000))
+                                            .then((value) =>
+                                                Navigator.pop(context));
+                                      } else if (widget.progress == 1) {
+                                        FirebaseFirestore.instance
+                                            .collection('courier')
+                                            .doc(parcelId)
+                                            .update({
+                                          'update': date,
+                                          'pickup': true,
+                                          'pickedAt': date,
+                                          'progress': widget.progress + 1,
+                                        });
+                                        Future.delayed(const Duration(
+                                                microseconds: 2000))
+                                            .then((value) =>
+                                                Navigator.pop(context));
+                                      } else if (widget.progress == 2) {
+                                        FirebaseFirestore.instance
+                                            .collection('courier')
+                                            .doc(parcelId)
+                                            .update({
+                                          'update': date,
+                                          'intransit': true,
+                                          'intransit_time': date,
+                                          'progress': widget.progress + 1,
+                                        });
+                                        Future.delayed(const Duration(
+                                                microseconds: 2000))
+                                            .then((value) =>
+                                                Navigator.pop(context));
+                                      } else if (widget.progress == 3) {
+                                        FirebaseFirestore.instance
+                                            .collection('courier')
+                                            .doc(parcelId)
+                                            .update({
+                                          'update': date,
+                                          'deliveredAt': date,
+                                          'delivered': true,
+                                          'progress': widget.progress + 1,
+                                        });
+                                        Future.delayed(const Duration(
+                                                microseconds: 2000))
+                                            .then((value) =>
+                                                Navigator.pop(context));
+                                      }
                                     },
                                     icon: const Icon(
                                       MaterialCommunityIcons
@@ -723,14 +738,14 @@ class Courier extends StatelessWidget {
             Row(
               children: [
                 const Icon(
-                  MaterialCommunityIcons.office_building_outline,
+                  MaterialCommunityIcons.clock,
                   size: 13,
                 ),
                 const SizedBox(
                   width: 5,
                 ),
                 Text(
-                  'Delivering Company :',
+                  'Pick-Up Time :',
                   style: textStyle(10, Colors.black, FontWeight.w800),
                 ),
               ],
@@ -754,6 +769,97 @@ class Courier extends StatelessWidget {
             Row(
               children: [
                 const Icon(
+                  MaterialCommunityIcons.bike_fast,
+                  size: 13,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  'Dispatch Time :',
+                  style: textStyle(10, Colors.black, FontWeight.w800),
+                ),
+              ],
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 18, top: 3),
+              child:  data?['delivered'] != false
+                    ? Text(
+                        "${data?['deliveredAt']}",
+                        textAlign: TextAlign.justify,
+                        style: textStyle(10, Colors.black87, FontWeight.w600),
+                      )
+                    : Text(
+                        "......",
+                        textAlign: TextAlign.justify,
+                        style: textStyle(10, Colors.black87, FontWeight.w600),
+                      )
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  MaterialCommunityIcons.flag,
+                  size: 13,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  'Delivery Time :',
+                  style: textStyle(10, Colors.black, FontWeight.w800),
+                ),
+              ],
+            ),
+            Container(
+                margin: EdgeInsets.only(left: 18, top: 3),
+                child: data?['delivered'] != false
+                    ? Text(
+                        "${data?['deliveredAt']}",
+                        textAlign: TextAlign.justify,
+                        style: textStyle(10, Colors.black87, FontWeight.w600),
+                      )
+                    : Text(
+                        "......",
+                        textAlign: TextAlign.justify,
+                        style: textStyle(10, Colors.black87, FontWeight.w600),
+                      )),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class Time extends StatelessWidget {
+  const Time({
+    Key? key,
+    required this.data,
+  }) : super(key: key);
+
+  final DocumentSnapshot<Object?>? data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
                   MaterialCommunityIcons.office_building_outline,
                   size: 13,
                 ),
@@ -761,7 +867,38 @@ class Courier extends StatelessWidget {
                   width: 5,
                 ),
                 Text(
-                  'Vehicle Plate :',
+                  'Company',
+                  style: textStyle(10, Colors.black, FontWeight.w800),
+                ),
+              ],
+            ),
+            Container(
+              margin: const EdgeInsets.only(left: 18, top: 3),
+              child: Text(
+                "${data?['company']}".toUpperCase(),
+                textAlign: TextAlign.justify,
+                style: textStyle(10, Colors.black87, FontWeight.w600),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(
+                  MaterialCommunityIcons.truck_fast_outline,
+                  size: 13,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  'License No.',
                   style: textStyle(10, Colors.black, FontWeight.w800),
                 ),
               ],
@@ -792,118 +929,7 @@ class Courier extends StatelessWidget {
                   width: 5,
                 ),
                 Text(
-                  'Courier Phone :',
-                  style: textStyle(10, Colors.black, FontWeight.w800),
-                ),
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 18, top: 3),
-              child: Text(
-                "${data?['courierNumber']}",
-                textAlign: TextAlign.justify,
-                style: textStyle(10, Colors.black87, FontWeight.w600),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class Time extends StatelessWidget {
-  const Time({
-    Key? key,
-    required this.data,
-  }) : super(key: key);
-
-  final DocumentSnapshot<Object?>? data;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  MaterialCommunityIcons.clock,
-                  size: 13,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  'Pick Up Time',
-                  style: textStyle(10, Colors.black, FontWeight.w800),
-                ),
-              ],
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 18, top: 3),
-              child: Text(
-                "${data?['company']}",
-                textAlign: TextAlign.justify,
-                style: textStyle(10, Colors.black87, FontWeight.w600),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  MaterialCommunityIcons.truck_fast_outline,
-                  size: 13,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  'Dispatch Time',
-                  style: textStyle(10, Colors.black, FontWeight.w800),
-                ),
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 18, top: 3),
-              child: Text(
-                "${data?['vehicle']}",
-                textAlign: TextAlign.justify,
-                style: textStyle(10, Colors.black87, FontWeight.w600),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  MaterialCommunityIcons.flag,
-                  size: 13,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  'Delivery Time',
+                  'Phone',
                   style: textStyle(10, Colors.black, FontWeight.w800),
                 ),
               ],
