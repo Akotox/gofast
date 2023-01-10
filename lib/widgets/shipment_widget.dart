@@ -64,42 +64,29 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
 
   @override
   Widget build(BuildContext context) {
-  
     var _package = Provider.of<ShipmentProvider>(context);
-    int activeStep = widget.package?["progress"];
-    // var updateTime = DateFormat.yMMMd()
-    //     .format(DateTime.fromMicrosecondsSinceEpoch(widget.package?['createAt']));
-    // var _today = DateFormat.yMMMd().format(DateTime.fromMicrosecondsSinceEpoch(
-    //     DateTime.now().microsecondsSinceEpoch));
+    
+    
+    int activeStep = widget.package!['progress'] ;
 
-    // String lastUpdateTime;
-    // //04.04.93
-
-    // if (updateTime == _today) {
-    //   lastUpdateTime = DateFormat('M/d @ hh:mm')
-    //       .format(DateTime.fromMicrosecondsSinceEpoch(widget.createdAt));
-    //   //  10:56
-    // } else {
-    //   lastUpdateTime = updateTime.toString();
-    // }
-
-    return InkWell(
-      onTap: () {
-        _package.getShipment(widget.package);
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ShipmentDetailsScreen(
-                      pickupAd: widget.pickupAd,
-                      shipmentId: widget.shipmentId,
-                      destination: widget.destination,
-                      weight: widget.weight,
-                      progress: widget.progress,
-                    )));
-      },
-      child: Stack(
-        children: [
-          Container(
+    return Stack(
+      children: [
+        InkWell(
+           onTap: () {
+      _package.getShipment(widget.package);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ShipmentDetailsScreen(
+                    package: widget.package,
+                    // pickupAd: widget.pickupAd,
+                    // shipmentId: widget.shipmentId,
+                    // destination: widget.destination,
+                    // weight: widget.weight,
+                    progress: widget.progress,
+                  )));
+    },
+          child: Container(
             height: MediaQuery.of(context).size.height * 0.21,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -125,7 +112,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 EasyStepper(
@@ -206,7 +193,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                           width: 5,
                         ),
                         Text(
-                          widget.pickupAd,
+                          "${widget.package!['pickupAd']}",
                           style: Theme.of(context).textTheme.headline6,
                         ),
                       ],
@@ -224,7 +211,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                           width: 5,
                         ),
                         Text(
-                          widget.package?['destination'],
+                          "${widget.package?['destination']}",
                           style: Theme.of(context).textTheme.headline6,
                         ),
                       ],
@@ -234,48 +221,48 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
               ],
             ),
           ),
-          Positioned(
-              top: 5,
-              right: 16,
-              child: Container(
-                height: 26,
-                width: MediaQuery.of(context).size.width * 0.31,
-                decoration: BoxDecoration(
-                    // color: Colors.grey.shade700,
-                    borderRadius: const BorderRadius.all(Radius.circular(19))),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      AntDesign.clockcircleo,
-                      color: Colors.black45,
-                      size: 15,
-                    ),
-                    Text(
-                      "${widget.package?['createdAt']} | 24 HRS",
-                      style: textStyle(12, Colors.black45, FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ).asGlass(
-                  tintColor: Theme.of(context).dividerColor,
-                  clipBorderRadius: BorderRadius.circular(15.0))),
-          widget.package?['company'] != null
-              ? const Positioned(
-                  bottom: 18,
-                  right: 16,
-                  child: SizedBox(
-                    height: 40,
-                    width: 40,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.white38,
-                      backgroundImage: AssetImage("assets/images/ups.png"),
-                    ),
-                  ))
-              : const SizedBox.shrink(),
-        ],
-      ),
+        ),
+        Positioned(
+            top: 5,
+            right: 16,
+            child: Container(
+              height: 26,
+              width: MediaQuery.of(context).size.width * 0.31,
+              decoration: BoxDecoration(
+                  // color: Colors.grey.shade700,
+                  borderRadius: const BorderRadius.all(Radius.circular(19))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    AntDesign.clockcircleo,
+                    color: Colors.black45,
+                    size: 15,
+                  ),
+                  Text(
+                    "${widget.package?['createdAt']} | 24 HRS",
+                    style: textStyle(12, Colors.black45, FontWeight.w600),
+                  ),
+                ],
+              ),
+            ).asGlass(
+                tintColor: Theme.of(context).dividerColor,
+                clipBorderRadius: BorderRadius.circular(15.0))),
+        widget.package?['company'] != null
+            ? const Positioned(
+                bottom: 18,
+                right: 16,
+                child: SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white38,
+                    backgroundImage: AssetImage("assets/images/ups.png"),
+                  ),
+                ))
+            : const SizedBox.shrink(),
+      ],
     );
   }
 

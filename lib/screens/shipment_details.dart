@@ -14,18 +14,20 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ShipmentDetailsScreen extends StatefulWidget {
   const ShipmentDetailsScreen({
-    Key? key,
-    required this.pickupAd,
-    required this.shipmentId,
-    required this.destination,
-    required this.weight,
-    required this.progress,
+    Key? key, required 
+    this.progress, this.package,
+    // required this.pickupAd,
+    // required this.shipmentId,
+    // required this.destination,
+    // required this.weight,
+    // required this.progress,
   }) : super(key: key);
-  final String pickupAd;
-  final String shipmentId;
-  final String destination;
-  final String weight;
+  // final String pickupAd;
+  // final String shipmentId;
+  // final String destination;
+  // final String weight;
   final int progress;
+  final QueryDocumentSnapshot<Map<String, dynamic>>? package;
 
   @override
   State<ShipmentDetailsScreen> createState() => _ShipmentDetailsScreenState();
@@ -47,6 +49,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     var _detailsProvider = Provider.of<ShipmentProvider>(context);
     var data = _detailsProvider.shipment;
     setState(() {
@@ -122,147 +125,158 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * .2,
                 ),
-                data["accepted"] == true
-                    ? Padding(
-                        padding: const EdgeInsets.only(left: 14.0),
-                        child: Text('Parcel Delivery Details',
-                            style:
-                                textStyle(14, Colors.black54, FontWeight.bold)),
-                      )
-                    : const SizedBox.shrink(),
-                data["accepted"] == true
-                    ? Container(
-                        height: MediaQuery.of(context).size.height * .3,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Colors.white54,
-                          image: const DecorationImage(
-                              image: AssetImage("assets/images/bg.png"),
-                              fit: BoxFit.cover,
-                              opacity: 0.54),
-                          borderRadius: BorderRadius.circular(20),
-                          // gradient: const LinearGradient(
-                          //     colors: [Colors.white, Color(0xFF03608F)]),
-                        ),
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Column(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    data["accepted"] == true
+                        ? Padding(
+                            padding: const EdgeInsets.only(left: 14.0, bottom: 15),
+                            child: Text('Parcel Delivery Details',
+                                style: textStyle(
+                                    14, Colors.black54, FontWeight.bold)),
+                          )
+                        : const SizedBox.shrink(),
+                    data["accepted"] == true
+                        ? Container(
+                            height: MediaQuery.of(context).size.height * .3,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                              color: Colors.white54,
+                              image: const DecorationImage(
+                                  image: AssetImage("assets/images/bg.png"),
+                                  fit: BoxFit.cover,
+                                  opacity: 0.54),
+                              borderRadius: BorderRadius.circular(20),
+                              // gradient: const LinearGradient(
+                              //     colors: [Colors.white, Color(0xFF03608F)]),
+                            ),
+                            child: Stack(
+                              clipBehavior: Clip.none,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 18.0, top: 30, right: 18),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Courier(data: data),
-                                      Time(data: data),
-                                    ],
-                                  ),
+                                Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 18.0, top: 30, right: 18),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Courier(data: data),
+                                          Time(data: data),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: EasyStepper(
+                                        alignment: Alignment.center,
+                                        direction: Axis.horizontal,
+                                        activeStep: activeStep,
+                                        enableStepTapping: false,
+                                        showTitle: true,
+                                        disableScroll: true,
+                                        lineLength: 45,
+                                        lineDotRadius: 1,
+                                        lineSpace: 5,
+                                        stepRadius: 20,
+                                        unreachedStepIconColor:
+                                            Colors.grey.shade900,
+                                        unreachedStepBorderColor:
+                                            Colors.grey.shade900,
+                                        unreachedStepTextColor:
+                                            Colors.grey.shade900,
+                                        finishedStepBackgroundColor:
+                                            Theme.of(context).iconTheme.color,
+                                        finishedStepBorderColor:
+                                            Theme.of(context).iconTheme.color,
+                                        finishedStepTextColor:
+                                            Theme.of(context).iconTheme.color,
+                                        activeStepBorderColor:
+                                            Theme.of(context).iconTheme.color,
+                                        activeStepBackgroundColor:
+                                            Colors.black38,
+                                        activeStepTextColor:
+                                            Colors.lightBlue.shade600,
+                                        lineColor:
+                                            Theme.of(context).iconTheme.color,
+                                        padding: 8,
+                                        steps: const [
+                                          EasyStep(
+                                            icon: Icon(MaterialCommunityIcons
+                                                .bike_fast),
+                                            activeIcon: Icon(
+                                                MaterialCommunityIcons.cached),
+                                            finishIcon:
+                                                Icon(Icons.check_circle),
+                                            title: 'Processing',
+                                            // lineText: "12:38",
+                                          ),
+                                          EasyStep(
+                                            icon: Icon(CupertinoIcons.cube_box),
+                                            finishIcon:
+                                                Icon(Icons.check_circle),
+                                            title: 'Dispatch',
+                                            // lineText: '3 KM',
+                                          ),
+                                          EasyStep(
+                                            icon: Icon(MaterialCommunityIcons
+                                                .bike_fast),
+                                            finishIcon:
+                                                Icon(Icons.check_circle),
+                                            title: 'In-transit',
+                                            // lineText: '3 KM',
+                                          ),
+                                          EasyStep(
+                                            icon: Icon(
+                                                MaterialIcons.location_history),
+                                            finishIcon:
+                                                Icon(Icons.check_circle),
+                                            title: 'Drop Off',
+                                            // lineText: '3 KM',
+                                          ),
+                                        ],
+                                        onStepReached: (index) =>
+                                            setState(() => activeStep = index),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: EasyStepper(
-                                    alignment: Alignment.center,
-                                    direction: Axis.horizontal,
-                                    activeStep: activeStep,
-                                    enableStepTapping: false,
-                                    showTitle: true,
-                                    disableScroll: true,
-                                    lineLength: 45,
-                                    lineDotRadius: 1,
-                                    lineSpace: 5,
-                                    stepRadius: 20,
-                                    unreachedStepIconColor:
-                                        Colors.grey.shade900,
-                                    unreachedStepBorderColor:
-                                        Colors.grey.shade900,
-                                    unreachedStepTextColor:
-                                        Colors.grey.shade900,
-                                    finishedStepBackgroundColor:
-                                        Theme.of(context).iconTheme.color,
-                                    finishedStepBorderColor:
-                                        Theme.of(context).iconTheme.color,
-                                    finishedStepTextColor:
-                                        Theme.of(context).iconTheme.color,
-                                    activeStepBorderColor:
-                                        Theme.of(context).iconTheme.color,
-                                    activeStepBackgroundColor: Colors.black38,
-                                    activeStepTextColor:
-                                        Colors.lightBlue.shade600,
-                                    lineColor:
-                                        Theme.of(context).iconTheme.color,
-                                    padding: 8,
-                                    steps: const [
-                                      EasyStep(
-                                        icon: Icon(
-                                            MaterialCommunityIcons.bike_fast),
-                                        activeIcon:
-                                            Icon(MaterialCommunityIcons.cached),
-                                        finishIcon: Icon(Icons.check_circle),
-                                        title: 'Processing',
-                                        // lineText: "12:38",
+                                Positioned(
+                                  top: -30,
+                                  left: 0,
+                                  right: 0,
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                        height: 50,
+                                        width: 50,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.white38,
+                                          backgroundImage:
+                                              NetworkImage(data['image']),
+                                        ),
                                       ),
-                                      EasyStep(
-                                        icon: Icon(CupertinoIcons.cube_box),
-                                        finishIcon: Icon(Icons.check_circle),
-                                        title: 'Dispatch',
-                                        // lineText: '3 KM',
-                                      ),
-                                      EasyStep(
-                                        icon: Icon(
-                                            MaterialCommunityIcons.bike_fast),
-                                        finishIcon: Icon(Icons.check_circle),
-                                        title: 'In-transit',
-                                        // lineText: '3 KM',
-                                      ),
-                                      EasyStep(
-                                        icon: Icon(
-                                            MaterialIcons.location_history),
-                                        finishIcon: Icon(Icons.check_circle),
-                                        title: 'Drop Off',
-                                        // lineText: '3 KM',
+                                      Container(
+                                        height: 140,
+                                        width: 2,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.white54,
+                                            // border: Border.all(
+                                            //     width: 1, color: Colors.grey),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
                                       ),
                                     ],
-                                    onStepReached: (index) =>
-                                        setState(() => activeStep = index),
                                   ),
                                 ),
                               ],
                             ),
-                            Positioned(
-                              top: -30,
-                              left: 0,
-                              right: 0,
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 50,
-                                    width: 50,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white38,
-                                      backgroundImage:
-                                          NetworkImage(data['image']),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 140,
-                                    width: 2,
-                                    decoration: const BoxDecoration(
-                                        color: Colors.white54,
-                                        // border: Border.all(
-                                        //     width: 1, color: Colors.grey),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10))),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : const SizedBox.shrink()
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                )
               ],
             ),
           ),
@@ -490,27 +504,48 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                             ],
                           ),
                         ),
-                        InkWell(
-                          onLongPress: () {
-                            qrMethod();
-                          },
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.14,
-                            width: MediaQuery.of(context).size.width * 0.28,
-                            child: BarcodeWidget(
-                              data:
-                                  "${data['progress']}${data['shipmentId']} parcel",
-                              barcode: Barcode.qrCode(),
-                              drawText: false,
-                              padding:
-                                  const EdgeInsets.only(left: 10, right: 10),
-                              backgroundColor: Colors.black,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ),
+                        munhu!.courierVerification != false
+                            ? InkWell(
+                                onLongPress: () {
+                                  data['delivered'] != true
+                                      ? qrMethod()
+                                      : () {};
+                                },
+                                child: SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.14,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.28,
+                                  child: BarcodeWidget(
+                                    data:
+                                        "${data['progress']}${data['shipmentId']} parcel",
+                                    barcode: Barcode.qrCode(),
+                                    drawText: false,
+                                    padding: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    backgroundColor: Colors.black,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: Colors.white),
+                                  ),
+                                ),
+                              )
+                            : SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.14,
+                                width: MediaQuery.of(context).size.width * 0.28,
+                                child: BarcodeWidget(
+                                  data: "${data['shipmentId']} search",
+                                  barcode: Barcode.qrCode(),
+                                  drawText: false,
+                                  padding: const EdgeInsets.only(
+                                      left: 10, right: 10),
+                                  backgroundColor: Colors.black,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      color: Colors.white),
+                                ),
+                              ),
                       ],
                     ),
                   ),
@@ -524,8 +559,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
   }
 
   Future<dynamic> qrMethod() {
-    var date = DateFormat("MM-dd kk:mm").format(DateTime.now()).toString();
-    var update = DateFormat("MMM d @ kk:mm").format(DateTime.now());
+
 
     return showModalBottomSheet(
         isScrollControlled: true,
@@ -534,15 +568,15 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
         context: context,
         builder: (context) {
           String? buttontxt;
-          if (widget.progress == 0) {
+          if (widget.package!['progress'] == 0) {
             buttontxt = "accept this job";
-          } else if (widget.progress == 1) {
+          } else if (widget.package!['progress'] == 1) {
             buttontxt = "pick-up parcel";
-          } else if (widget.progress == 2) {
+          } else if (widget.package!['progress'] == 2) {
             buttontxt = "Start Delivering";
-          } else if (widget.progress == 3) {
-            buttontxt = "In-transit";
-          } else if (widget.progress == 4) {
+          } else if (widget.package!['progress'] == 3) {
+            buttontxt = "Drop - off";
+          } else if (widget.package!['progress'] == 4) {
             buttontxt = "Delivered";
           }
 
@@ -598,6 +632,13 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                 alignment: Alignment.bottomRight,
                                 child: TextButton.icon(
                                     onPressed: () {
+                                      var date = DateFormat("MM-dd kk:mm")
+                                          .format(DateTime.now())
+                                          .toString();
+                                      var update = DateFormat("MMM d @ kk:mm")
+                                          .format(DateTime.now())
+                                          .toString();
+
                                       if (widget.progress == 0) {
                                         FirebaseFirestore.instance
                                             .collection('courier')
@@ -624,7 +665,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                             .collection('courier')
                                             .doc(parcelId)
                                             .update({
-                                          'update': date,
+                                          'update': update,
                                           'pickup': true,
                                           'pickedAt': date,
                                           'progress': widget.progress + 1,
@@ -638,7 +679,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                             .collection('courier')
                                             .doc(parcelId)
                                             .update({
-                                          'update': date,
+                                          'update': update,
                                           'intransit': true,
                                           'intransit_time': date,
                                           'progress': widget.progress + 1,
@@ -652,7 +693,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                             .collection('courier')
                                             .doc(parcelId)
                                             .update({
-                                          'update': date,
+                                          'update': update,
                                           'deliveredAt': date,
                                           'delivered': true,
                                           'progress': widget.progress + 1,
@@ -753,7 +794,7 @@ class Courier extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(left: 18, top: 3),
               child: Text(
-                "${data?['company']}",
+                "${data?['pickedAt']}",
                 textAlign: TextAlign.justify,
                 style: textStyle(10, Colors.black87, FontWeight.w600),
               ),
@@ -782,10 +823,10 @@ class Courier extends StatelessWidget {
               ],
             ),
             Container(
-              margin: EdgeInsets.only(left: 18, top: 3),
-              child:  data?['delivered'] != false
+                margin: EdgeInsets.only(left: 18, top: 3),
+                child: data?['delivered'] != false
                     ? Text(
-                        "${data?['deliveredAt']}",
+                        "${data?['intransit_time']}",
                         textAlign: TextAlign.justify,
                         style: textStyle(10, Colors.black87, FontWeight.w600),
                       )
@@ -793,8 +834,7 @@ class Courier extends StatelessWidget {
                         "......",
                         textAlign: TextAlign.justify,
                         style: textStyle(10, Colors.black87, FontWeight.w600),
-                      )
-            ),
+                      )),
             const SizedBox(
               height: 10,
             ),
@@ -962,3 +1002,4 @@ void doNothing(BuildContext context) {
     'progress': 1,
   });
 }
+

@@ -7,6 +7,8 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/global/global_variables.dart';
+import 'package:gofast/services/firebase_services.dart';
+import 'package:gofast/widgets/shipment_streams/companies.dart';
 import 'package:uuid/uuid.dart';
 
 class Steppa extends StatefulWidget {
@@ -18,11 +20,14 @@ class Steppa extends StatefulWidget {
 
 class _SteppaState extends State<Steppa> {
   final _formKey = GlobalKey<FormState>();
+
+  FirebaseServices _service = FirebaseServices();
   final _sndformKey = GlobalKey<FormState>();
   final TextEditingController _pickUpAddress = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
   final TextEditingController _destination = TextEditingController();
   final TextEditingController _destinationNumber = TextEditingController();
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _couriers;
 
   bool _isLoading = false;
 
@@ -39,12 +44,29 @@ class _SteppaState extends State<Steppa> {
       _counter--;
     });
   }
-
+    @override
+  void didChangeDependencies() {
+    super.didChangeDependencies ();
+     _couriers = FirebaseFirestore.instance.collection('company').snapshots();
+  }
   String productCategory = 'Others';
 
   @override
   Widget build(BuildContext context) {
     final steps = [
+      
+      CoolStep(
+        title: 'Please the Courier Service Provider',
+        subtitle: 'Choose a provider or the system automatically pick for you',
+        content: SingleChildScrollView(
+          child: CompaniesBuilda(couriers: _couriers) ),
+       
+        validation: () {
+          return null;
+        },
+      ),
+      
+      
       CoolStep(
         title: 'Please select a Category',
         subtitle: 'Choose a category type of your parcel',
@@ -164,6 +186,7 @@ class _SteppaState extends State<Steppa> {
           return null;
         },
       ),
+      
       CoolStep(
         title: 'Sender Information',
         subtitle: 'Please fill the required information to get started',

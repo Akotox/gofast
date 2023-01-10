@@ -67,8 +67,38 @@ class _CourierPageState extends State<CourierPage>
     return Scaffold(
       backgroundColor: Theme.of(context).iconTheme.color,
       appBar: AppBar(
-        toolbarHeight: 0,
         elevation: 0,
+        title:  Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 2.0, right: 16),
+                        child: Text(
+                          "$greeting  ${munhu?.name}",
+                          style: textStyle(16, Colors.white, FontWeight.bold),
+                        ),
+                      ),
+                      
+                      const SizedBox(
+                        height: 35,
+                        width: 35,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white38,
+                          backgroundImage: AssetImage("assets/images/user.png"),
+                        ),
+                      ),
+                    ],
+                  )),
+                ],
+              ),
+      
+          
+        
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -134,9 +164,8 @@ class _CourierPageState extends State<CourierPage>
                           blurY: 8),
                     ),
                     Expanded(
-                      child: TabBarView(
-                          controller: _tabController,
-                          physics: NeverScrollableScrollPhysics(),
+                      child: TabBarView(controller: _tabController,
+                          // physics: NeverScrollableScrollPhysics(),
                           children: [
                             // Processing
                             Column(
@@ -212,7 +241,7 @@ class _CourierPageState extends State<CourierPage>
               ),
               InkWell(
                 onTap: () {
-                  // acceptedSheet();
+                 
                 },
                 child: Row(
                   children: [
@@ -275,54 +304,59 @@ class _CourierPageState extends State<CourierPage>
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 20.0),
+          padding: const EdgeInsets.fromLTRB(11, 0, 10, 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 5,
-              ),
+              // const SizedBox(
+              //   height: 5,
+              // ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Expanded(
+              //         child: Row(
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         Padding(
+              //           padding: const EdgeInsets.only(left: 2.0, right: 16),
+              //           child: Text(
+              //             "$greeting  ${munhu?.name}",
+              //             style: textStyle(16, Colors.white, FontWeight.bold),
+              //           ),
+              //         ),
+              //         const SizedBox(
+              //           width: 5,
+              //         ),
+              //         const SizedBox(
+              //           height: 35,
+              //           width: 35,
+              //           child: CircleAvatar(
+              //             backgroundColor: Colors.white38,
+              //             backgroundImage: AssetImage("assets/images/user.png"),
+              //           ),
+              //         ),
+              //       ],
+              //     )),
+              //   ],
+              // ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                      child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 2.0, right: 16),
-                        child: Text(
-                          "$greeting  ${munhu?.name}",
-                          style: textStyle(16, Colors.white, FontWeight.bold),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const SizedBox(
-                        height: 35,
-                        width: 35,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white38,
-                          backgroundImage: AssetImage("assets/images/user.png"),
-                        ),
-                      ),
-                    ],
-                  )),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Courier Center",
-                    style: Theme.of(context).textTheme.headline1,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
                   Lottie.asset('assets/json/delivery.json',
                       width: 50, height: 50),
+                      const SizedBox(
+                    width: 8,
+                  ),
+                  Center(
+                    
+                    child: Text(
+                      "Courier Center",
+                      style: Theme.of(context).textTheme.headline1,
+                    ),
+                  ),
+                  
+                  
                 ],
               ),
               const SizedBox(
@@ -424,7 +458,9 @@ class _CourierPageState extends State<CourierPage>
           } else if (status == 2) {
             buttontxt = "Start Delivering";
           } else if (status == 3) {
-            buttontxt = "delivered";
+            buttontxt = "Drop - off";
+          } else if (status == 4) {
+            buttontxt = "Delivered";
           }
           return Stack(
             clipBehavior: Clip.none,
@@ -481,8 +517,9 @@ class _CourierPageState extends State<CourierPage>
                                       var date = DateFormat("MM-dd kk:mm")
                                           .format(DateTime.now())
                                           .toString();
-                                      var update =
-                                          DateFormat('M/d @ hh:mm').toString();
+                                      var update = DateFormat("MMM d @ kk:mm")
+                                          .format(DateTime.now())
+                                          .toString();
 
                                       if (status == 0) {
                                         FirebaseFirestore.instance
@@ -510,7 +547,7 @@ class _CourierPageState extends State<CourierPage>
                                             .collection('courier')
                                             .doc(shipmentId)
                                             .update({
-                                          'update': date,
+                                          'update': update,
                                           'pickup': true,
                                           'pickedAt': date,
                                           'progress': status + 1,
@@ -524,7 +561,7 @@ class _CourierPageState extends State<CourierPage>
                                             .collection('courier')
                                             .doc(shipmentId)
                                             .update({
-                                          'update': date,
+                                          'update': update,
                                           'intransit': true,
                                           'intransit_time': date,
                                           'progress': status + 1,
@@ -538,7 +575,7 @@ class _CourierPageState extends State<CourierPage>
                                             .collection('courier')
                                             .doc(shipmentId)
                                             .update({
-                                          'update': date,
+                                          'update': update,
                                           'deliveredAt': date,
                                           'delivered': true,
                                           'progress': status + 1,
@@ -595,7 +632,7 @@ class _CourierPageState extends State<CourierPage>
         .where('pickup', isEqualTo: false)
         .where('accepted', isEqualTo: false)
         .orderBy('createdAt', descending: false)
-        .snapshots();
+        .snapshots(includeMetadataChanges: false);
 
     _accepted = FirebaseFirestore.instance
         .collection('courier')
@@ -648,12 +685,10 @@ class _CourierPageState extends State<CourierPage>
         );
     final docSnap = await ref.get();
     final thisUser = docSnap.data(); // Convert to City object
-    if (thisUser != null) {
+    if (thisUser != null && mounted) {
       setState(() {
         munhu = thisUser;
       });
-    } else {
-      print("No such document.");
     }
   }
 }

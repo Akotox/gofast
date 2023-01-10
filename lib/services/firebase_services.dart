@@ -18,6 +18,14 @@ class FirebaseServices {
       FirebaseFirestore.instance.collection('followers');
   CollectionReference following =
       FirebaseFirestore.instance.collection('following');
+  CollectionReference couriers =
+      FirebaseFirestore.instance.collection('couriers');
+
+  CollectionReference warehouse =
+      FirebaseFirestore.instance.collection('warehouse');
+
+  CollectionReference company =
+      FirebaseFirestore.instance.collection('company');
 
   User? user = FirebaseAuth.instance.currentUser;
   Future<DocumentSnapshot> getUser() async {

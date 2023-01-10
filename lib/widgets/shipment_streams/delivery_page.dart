@@ -28,7 +28,7 @@ class Deliveries extends StatelessWidget {
                   return ListView.builder(
                     itemCount: snapshot.data?.docs.length,
                     shrinkWrap: true,
-                    // physics: NeverScrollableScrollPhysics(),
+                    physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (BuildContext context, int index) {
                       var package = snapshot.data?.docs[index];
 

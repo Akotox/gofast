@@ -8,7 +8,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:glass/glass.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 import 'package:gofast/global/global_variables.dart';
-import 'package:gofast/widgets/send_parcel_widget.dart';
+import 'package:gofast/screens/send_parcel_widget.dart';
 import 'package:gofast/widgets/shipment_streams/in_delivered.dart';
 import 'package:gofast/widgets/shipment_streams/in_dispatch.dart';
 import 'package:gofast/widgets/shipment_streams/in_processing.dart';
@@ -18,7 +18,6 @@ import 'package:gofast/widgets/shipment_streams/out_processing.dart';
 import 'package:gofast/widgets/shipment_streams/out_transit.dart';
 import 'package:gofast/widgets/warehouse_stream.dart';
 import 'package:intl/intl.dart';
-
 
 import 'package:lottie/lottie.dart';
 
@@ -48,14 +47,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late Stream<QuerySnapshot<Map<String, dynamic>>> _intransitStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveredStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _deliveryStream;
-    late Stream<QuerySnapshot<Map<String, dynamic>>>  _warehouse;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
 
   @override
   void initState() {
     super.initState();
 
-    _warehouse = FirebaseFirestore.instance.collection('warehouse').snapshots();
+    getStreams();
+  }
 
+  void getStreams() {
+    _warehouse = FirebaseFirestore.instance.collection('warehouse').snapshots();
 
     _processingStream = FirebaseFirestore.instance
         .collection('courier')
@@ -138,11 +140,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         .where('delivered', isEqualTo: true)
         .orderBy('createdAt', descending: true)
         .snapshots();
-
-   
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -218,8 +216,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25),
-                                  ),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
                               child: TabBar(
                                   controller: _tabController,
                                   indicator: BoxDecoration(
@@ -248,11 +246,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     )
                                   ]),
                             ).asGlass(
-                        tintColor: Theme.of(context).dividerColor,
-                  clipBorderRadius: BorderRadius.circular(19.0),
-                  blurX: 8,
-                  blurY: 8
-                      ),
+                                tintColor: Theme.of(context).dividerColor,
+                                clipBorderRadius: BorderRadius.circular(19.0),
+                                blurX: 8,
+                                blurY: 8),
                           ),
                           Expanded(
                             child: TabBarView(
@@ -327,8 +324,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             child: Container(
                               height: 40,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(25),
-                                  ),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
                               child: TabBar(
                                   controller: _tabController,
                                   indicator: BoxDecoration(
@@ -357,11 +354,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     )
                                   ]),
                             ).asGlass(
-                        tintColor: Theme.of(context).dividerColor,
-                  clipBorderRadius: BorderRadius.circular(19.0),
-                  blurX: 8,
-                  blurY: 8
-                      ),
+                                tintColor: Theme.of(context).dividerColor,
+                                clipBorderRadius: BorderRadius.circular(19.0),
+                                blurX: 8,
+                                blurY: 8),
                           ),
                           Expanded(
                             child: TabBarView(
@@ -406,10 +402,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ),
                     ).asGlass(
                         tintColor: Theme.of(context).dividerColor,
-                  clipBorderRadius: BorderRadius.circular(19.0),
-                  blurX: 8,
-                  blurY: 8
-                      ),
+                        clipBorderRadius: BorderRadius.circular(19.0),
+                        blurX: 8,
+                        blurY: 8),
                   )
                 ],
               ),
@@ -808,9 +803,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
     if (!mounted) return;
 
-    if (scanResult.contains("parcel")) {
-      var date = DateFormat("MM-dd kk:mm").format(DateTime.now());
-
-    }
+    if (scanResult.contains("search")) {
+    } else if (scanResult.contains("search")) {
+    } else {}
   }
 }
