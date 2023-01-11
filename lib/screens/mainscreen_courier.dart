@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_pages.dart';
-import 'package:gofast/global/global_variables.dart';
-import 'package:gofast/models/user_model.dart';
 import 'package:gofast/screens/courier.dart';
 import 'package:gofast/screens/profile.dart';
 import 'package:gofast/services/firebase_services.dart';

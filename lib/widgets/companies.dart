@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class Company extends StatefulWidget {
   final QueryDocumentSnapshot<Map<String, dynamic>>? data;
   final int selectedIndex;
-  const Company({super.key, this.data, required this.selectedIndex});
+
+  const Company(
+      {super.key, this.data, required this.selectedIndex});
 
   @override
   State<Company> createState() => _CompanyState();
@@ -13,11 +15,12 @@ class Company extends StatefulWidget {
 class _CompanyState extends State<Company> {
   String productCategory = 'Go-Fasta';
   String selectedTab = 'Go';
+  bool? selected;
 
   @override
   Widget build(BuildContext context) {
     print(widget.selectedIndex);
-  
+
     return Container(
       margin: const EdgeInsets.only(
         bottom: 16,
@@ -43,7 +46,6 @@ class _CompanyState extends State<Company> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          
           Row(
             children: [
               Container(
@@ -85,7 +87,6 @@ class _CompanyState extends State<Company> {
               ),
             ],
           ),
-          
           const SizedBox(
             width: 20,
           ),
@@ -95,6 +96,7 @@ class _CompanyState extends State<Company> {
             groupValue: productCategory,
             onChanged: (value) {
               setState(() {
+                selected = !selected!;
                 productCategory = value.toString();
               });
             },

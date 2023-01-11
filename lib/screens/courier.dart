@@ -49,6 +49,7 @@ class _CourierPageState extends State<CourierPage>
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dropoff;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _jobStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
+  UserData? _munhu;
 
   @override
   void initState() {
@@ -60,45 +61,39 @@ class _CourierPageState extends State<CourierPage>
 
   @override
   Widget build(BuildContext context) {
-    print(DateTime.now().toString());
-
     var date = DateFormat("MMM d @ kk:mm").format(DateTime.now());
-    print(date);
+
     return Scaffold(
       backgroundColor: Theme.of(context).iconTheme.color,
       appBar: AppBar(
         elevation: 0,
-        title:  Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                      child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 2.0, right: 16),
-                        child: Text(
-                          "$greeting  ${munhu?.name}",
-                          style: textStyle(16, Colors.white, FontWeight.bold),
-                        ),
-                      ),
-                      
-                      const SizedBox(
-                        height: 35,
-                        width: 35,
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white38,
-                          backgroundImage: AssetImage("assets/images/user.png"),
-                        ),
-                      ),
-                    ],
-                  )),
-                ],
-              ),
-      
-          
-        
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+                child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 2.0, right: 16),
+                  child: Text(
+                    "$greeting  ${munhu?.name}",
+                    style: textStyle(16, Colors.white, FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 35,
+                  width: 35,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white38,
+                    backgroundImage: AssetImage("assets/images/user.png"),
+                  ),
+                ),
+              ],
+            )),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -240,9 +235,7 @@ class _CourierPageState extends State<CourierPage>
                 ),
               ),
               InkWell(
-                onTap: () {
-                 
-                },
+                onTap: () {},
                 child: Row(
                   children: [
                     const Icon(
@@ -345,18 +338,15 @@ class _CourierPageState extends State<CourierPage>
                 children: [
                   Lottie.asset('assets/json/delivery.json',
                       width: 50, height: 50),
-                      const SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Center(
-                    
                     child: Text(
                       "Courier Center",
                       style: Theme.of(context).textTheme.headline1,
                     ),
                   ),
-                  
-                  
                 ],
               ),
               const SizedBox(
@@ -687,7 +677,7 @@ class _CourierPageState extends State<CourierPage>
     final thisUser = docSnap.data(); // Convert to City object
     if (thisUser != null && mounted) {
       setState(() {
-        munhu = thisUser;
+        _munhu = thisUser;
       });
     }
   }

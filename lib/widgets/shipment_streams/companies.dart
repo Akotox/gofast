@@ -31,9 +31,9 @@ class CompaniesBuilda extends StatelessWidget {
                 var data = snapshot.data?.docs[index];
                 // var selectedIndex = index;
                 return Company(
-                  data: data, selectedIndex: index,
-                  
-
+                  data: data,
+                  selectedIndex: index,
+                
                 );
               },
             );
@@ -46,3 +46,5 @@ class CompaniesBuilda extends StatelessWidget {
     );
   }
 }
+
+
