@@ -30,3 +30,11 @@ List<String> deliveryPeriod = [
 ];
 
 UserData? munhu;
+String companyid = "rA7H5H7D8fS1Qg2SbaWl"; 
+
+List<String> type = [
+  "assets/images/small.png",
+  "assets/images/medium.png",
+  "assets/images/large.png",
+ "assets/images/custom.png",
+];

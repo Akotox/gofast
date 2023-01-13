@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_stepper/cool_stepper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,10 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gofast/exports/export_services.dart';
-import 'package:gofast/global/global_variables.dart';
-import 'package:gofast/models/companies.dart';
 import 'package:gofast/services/firebase_services.dart';
-import 'package:gofast/widgets/shipment_streams/companies.dart';
+import 'package:lottie/lottie.dart';
 import 'package:uuid/uuid.dart';
 
 class Steppa extends StatefulWidget {
@@ -29,13 +29,11 @@ class _SteppaState extends State<Steppa> {
   final TextEditingController _destination = TextEditingController();
   final TextEditingController _destinationNumber = TextEditingController();
   late Stream<QuerySnapshot<Map<String, dynamic>>> _couriers;
-  
+  late Future<DocumentSnapshot<Map<String, dynamic>>> _getCompanies;
+  // late Future<DocumentSnapshot<Map<String, dynamic>>> _getSizes;
 
-   final CollectionReference companiesCol =
+  final CollectionReference companiesCol =
       FirebaseFirestore.instance.collection('company');
-
-  
- 
 
   bool _isLoading = false;
 
@@ -55,142 +53,322 @@ class _SteppaState extends State<Steppa> {
 
   @override
   void didChangeDependencies() {
+    _getCompanies =
+        FirebaseFirestore.instance.collection('company').doc(companyid).get();
+    // _getSizes =
+    // FirebaseFirestore.instance.collection('company').doc(companyid).get();
     super.didChangeDependencies();
+
     _couriers = FirebaseFirestore.instance.collection('company').snapshots();
-   
   }
 
-
-  String productCategory = 'Others';
+  String productCategory = 'GoFasta';
 
   @override
   Widget build(BuildContext context) {
-    
-    
     final steps = [
       CoolStep(
-        title: 'Please the Courier Service Provider',
-        subtitle: 'Choose a provider or the system automatically pick for you',
-        content:
-            SingleChildScrollView(child: CompaniesBuilda(couriers: _couriers)),
-        validation: () {
-          return null;
-        },
-      ),
+          title: 'Please the Courier Service Provider',
+          subtitle:
+              'Choose a provider or the system automatically pick for you',
+          content: SingleChildScrollView(
+              child: FutureBuilder<DocumentSnapshot>(
+                  future: _getCompanies,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                          child: Lottie.asset("assets/json/delivery.json"));
+                    } else {
+                      if (snapshot.data == null) {
+                        const Center(
+                          child: Text('No companies available'),
+                        );
+                      }
+                    }
+                    var companies = snapshot.data!['companies'];
+                    // print(companies!['companies'][0]['name']);
+                    return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.only(
+                              bottom: 16,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            height: 90,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(19),
+                              color: Theme.of(context).backgroundColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Theme.of(context).shadowColor,
+                                  spreadRadius: 0,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 0),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      height: 55,
+                                      width: 55,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(40),
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                              companies![index]['image']),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 15,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "${companies![index]['name']}",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline4,
+                                        ),
+                                        const SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(
+                                          "${companies![index]['hours']}",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5,
+                                        ),
+                                        const SizedBox(
+                                          height: 3,
+                                        ),
+                                        Text(
+                                          "${companies![index]['hq']}",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline6,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Radio(
+                                  activeColor: Theme.of(context)
+                                      .progressIndicatorTheme
+                                      .color,
+                                  value: "${companies![index]['name']}",
+                                  groupValue: productCategory,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      productCategory = value.toString();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        itemCount: snapshot.data!['companies'].length,
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const Divider(
+                            thickness: 0,
+                            indent: 0,
+                            color: Colors.transparent,
+                          );
+                        });
+                  })),
+          validation: () {
+            return null;
+          }),
       CoolStep(
         title: 'Please select a Category',
         subtitle: 'Choose a category type of your parcel',
         content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(
-                      bottom: 16,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    height: 90,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(19),
-                      color: Theme.of(context).backgroundColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(context).shadowColor,
-                          spreadRadius: 0,
-                          blurRadius: 5,
-                          offset: const Offset(0, 0),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Radio(
-                          activeColor:
-                              Theme.of(context).progressIndicatorTheme.color,
-                          value: 'Food | Perishable',
-                          groupValue: productCategory,
-                          onChanged: (value) {
-                            setState(() {
-                              productCategory = value.toString();
-                            });
-                          },
-                        ),
-                        Container(
-                          height: 99,
-                          width: 66,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage("assets/images/small.png"),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              parcelSize.last,
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                            const SizedBox(
-                              height: 3,
-                            ),
-                            Text(
-                              "parcelSizeDimension",
-                              style: Theme.of(context).textTheme.headline5,
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "parcelSizeDescription",
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Row(
-                          children: [
-                            InkWell(
-                                onTap: () {
-                                  decrement();
-                                },
-                                child: const Icon(CupertinoIcons.minus_circle)),
-                            Container(
-                              width: 40,
-                              child: Center(
-                                  child: Text("$_counter",
-                                      style: textStyle(16, Colors.black87,
-                                          FontWeight.w700))),
-                            ),
-                            InkWell(
-                                onTap: () {
-                                  increment();
-                                },
-                                child: const Icon(CupertinoIcons.plus_circle)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+            child: FutureBuilder<DocumentSnapshot>(
+                future: _getCompanies,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                        child: Lottie.asset("assets/json/delivery.json"));
+                  } else {
+                    if (snapshot.data == null) {
+                      const Center(
+                        child: Text('No companies available'),
+                      );
+                    }
+                  }
+                  var companies = snapshot.data!['sizes'];
+                  return ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return index != 4
+                            ? Container(
+                                margin: const EdgeInsets.only(
+                                  bottom: 16,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(19),
+                                  color: Theme.of(context).backgroundColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).shadowColor,
+                                      spreadRadius: 0,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 0),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Radio(
+                                          activeColor: Theme.of(context)
+                                              .progressIndicatorTheme
+                                              .color,
+                                          value: "${companies![index]['name']}",
+                                          groupValue: productCategory,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              productCategory =
+                                                  value.toString();
+                                            });
+                                          },
+                                        ),
+
+                                        Container(
+                                          height: 40,
+                                          width: 40,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(40),
+                                            image: DecorationImage(
+                                              image: AssetImage(type[index]),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "${companies![index]['name']}",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline4,
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.35,
+                                              child: Text(
+                                                "${companies![index]['condition']}",
+                                                overflow: TextOverflow.ellipsis,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 3,
+                                            ),
+                                          ],
+                                        ),
+                                        //  const SizedBox(
+                                        //   width: 13,
+                                        // ),
+                                        companies![index]['name'] ==
+                                                productCategory
+                                            ? Row(
+                                                children: [
+                                                  InkWell(
+                                                      onTap: () {
+                                                        decrement();
+                                                      },
+                                                      child: const Icon(
+                                                        CupertinoIcons
+                                                            .minus_circle,
+                                                        color: Colors.grey,
+                                                      )),
+                                                  Container(
+                                                    width: 30,
+                                                    child: Center(
+                                                        child: Text("$_counter",
+                                                            style: textStyle(
+                                                                16,
+                                                                Colors.black87,
+                                                                FontWeight
+                                                                    .w700))),
+                                                  ),
+                                                  InkWell(
+                                                      onTap: () {
+                                                        increment();
+                                                      },
+                                                      child: const Icon(
+                                                          CupertinoIcons
+                                                              .plus_circle,
+                                                          color: Colors.grey)),
+                                                ],
+                                              )
+                                            : SizedBox.shrink()
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Container(
+                                color: Colors.black,
+                                height: 10,
+                                width: 30,
+                              );
+                      },
+                      itemCount: snapshot.data!['sizes'].length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider(
+                          thickness: 0,
+                          indent: 0,
+                          color: Colors.transparent,
+                        );
+                      });
+                })),
         validation: () {
           return null;
         },
@@ -224,6 +402,19 @@ class _SteppaState extends State<Steppa> {
                 },
                 controller: _phoneNumber,
               ),
+
+              productCategory == "Custom" ?
+              _buildTextField(
+                labelText: 'Pacel Details',
+                hintText: "Tikuda kutama ",
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Details are required';
+                  }
+                  return null;
+                },
+                controller: _phoneNumber,
+              ):SizedBox.fromSize()
             ],
           ),
         ),
@@ -294,14 +485,23 @@ class _SteppaState extends State<Steppa> {
           Positioned(
             top: 35,
             left: 10,
-            child: IconButton(
-                icon: const Icon(
-                  AntDesign.leftcircleo,
-                  color: Colors.white,
+            child: Row(
+              children: [
+                IconButton(
+                    icon: const Icon(
+                      AntDesign.closecircleo,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.1,
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
+                Text('Welcome to our Courier Center'.toUpperCase(),
+                    style: textStyle(14, Colors.white, FontWeight.bold))
+              ],
+            ),
           )
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/screens/courier.dart';
 import 'package:gofast/screens/mainscreen_courier.dart';
 
 

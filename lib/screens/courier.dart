@@ -49,7 +49,7 @@ class _CourierPageState extends State<CourierPage>
   late Stream<QuerySnapshot<Map<String, dynamic>>> _dropoff;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _jobStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _warehouse;
-  UserData? _munhu;
+  // UserData? _munhu;
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _CourierPageState extends State<CourierPage>
                 Padding(
                   padding: const EdgeInsets.only(left: 2.0, right: 16),
                   child: Text(
-                    "$greeting  ${munhu?.name}",
+                    "$greeting  ${munhu?.name ?? "Mkomana"}",
                     style: textStyle(16, Colors.white, FontWeight.bold),
                   ),
                 ),
@@ -677,7 +677,7 @@ class _CourierPageState extends State<CourierPage>
     final thisUser = docSnap.data(); // Convert to City object
     if (thisUser != null && mounted) {
       setState(() {
-        _munhu = thisUser;
+        munhu = thisUser;
       });
     }
   }
