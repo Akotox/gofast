@@ -395,8 +395,14 @@ class _CourierPageState extends State<CourierPage>
                   color: Colors.lightBlue.shade600),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 10,
+                 const SizedBox(height: 10,),
+                   Container(
+                    height: 5,
+                    width: 40,
+                    decoration: const BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),

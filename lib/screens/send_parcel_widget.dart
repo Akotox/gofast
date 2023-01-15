@@ -28,9 +28,12 @@ class _SteppaState extends State<Steppa> {
   final TextEditingController _phoneNumber = TextEditingController();
   final TextEditingController _destination = TextEditingController();
   final TextEditingController _destinationNumber = TextEditingController();
+  final TextEditingController _parcel = TextEditingController();
+  final TextEditingController _countertxt = TextEditingController();
+
+
   late Stream<QuerySnapshot<Map<String, dynamic>>> _couriers;
   late Future<DocumentSnapshot<Map<String, dynamic>>> _getCompanies;
-  // late Future<DocumentSnapshot<Map<String, dynamic>>> _getSizes;
 
   final CollectionReference companiesCol =
       FirebaseFirestore.instance.collection('company');
@@ -55,11 +58,7 @@ class _SteppaState extends State<Steppa> {
   void didChangeDependencies() {
     _getCompanies =
         FirebaseFirestore.instance.collection('company').doc(companyid).get();
-    // _getSizes =
-    // FirebaseFirestore.instance.collection('company').doc(companyid).get();
     super.didChangeDependencies();
-
-    _couriers = FirebaseFirestore.instance.collection('company').snapshots();
   }
 
   String productCategory = 'GoFasta';
@@ -413,7 +412,7 @@ class _SteppaState extends State<Steppa> {
                   }
                   return null;
                 },
-                controller: _phoneNumber,
+                controller: _parcel,
               ):SizedBox.fromSize()
             ],
           ),

@@ -65,27 +65,25 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
   @override
   Widget build(BuildContext context) {
     var _package = Provider.of<ShipmentProvider>(context);
-    
-    
-    int activeStep = widget.package!['progress'] ;
+
+    int activeStep = widget.package!['progress'];
+    var codegen = widget.package!['shipmentId'];
+    String code = codegen.substring(0,8);
+
 
     return Stack(
       children: [
         InkWell(
-           onTap: () {
-      _package.getShipment(widget.package);
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ShipmentDetailsScreen(
-                    package: widget.package,
-                    // pickupAd: widget.pickupAd,
-                    // shipmentId: widget.shipmentId,
-                    // destination: widget.destination,
-                    // weight: widget.weight,
-                    progress: widget.progress,
-                  )));
-    },
+          onTap: () {
+            _package.getShipment(widget.package);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ShipmentDetailsScreen(
+                          package: widget.package,
+                          progress: widget.progress,
+                        )));
+          },
           child: Container(
             height: MediaQuery.of(context).size.height * 0.21,
             padding: const EdgeInsets.all(16),
@@ -115,6 +113,8 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                 const SizedBox(
                   height: 10,
                 ),
+
+//STEPPERS SHOWING DELIVERY PROGRESS
                 EasyStepper(
                     alignment: Alignment.topLeft,
                     activeStep: activeStep,
@@ -162,6 +162,8 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                     ],
                     onStepReached: (index) =>
                         setState(() => activeStep = index)),
+
+//COURIER INFORMATION AND DELIVERY TIMESTAMPS
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -222,33 +224,69 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
             ),
           ),
         ),
-        Positioned(
-            top: 5,
-            right: 16,
-            child: Container(
-              height: 26,
-              width: MediaQuery.of(context).size.width * 0.31,
-              decoration: BoxDecoration(
-                  // color: Colors.grey.shade700,
-                  borderRadius: const BorderRadius.all(Radius.circular(19))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Icon(
-                    AntDesign.clockcircleo,
-                    color: Colors.black45,
-                    size: 15,
+
+//SHIPMENT POST TIME
+        widget.package!['delivered'] != true
+            ? Positioned(
+                top: 5,
+                right: 16,
+                child: Container(
+                  height: 26,
+                  width: MediaQuery.of(context).size.width * 0.31,
+                  decoration: BoxDecoration(
+                      // color: Colors.grey.shade700,
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(19))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        AntDesign.clockcircleo,
+                        color: Colors.black45,
+                        size: 15,
+                      ),
+                      Text(
+                        "${widget.package?['createdAt']} | 24 HRS",
+                        style: textStyle(12, Colors.black45, FontWeight.w600),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "${widget.package?['createdAt']} | 24 HRS",
-                    style: textStyle(12, Colors.black45, FontWeight.w600),
+                ).asGlass(
+                    tintColor: Theme.of(context).dividerColor,
+                    clipBorderRadius: BorderRadius.circular(15.0),
+                    blurX: 2),
+              )
+            :
+
+//DELIVERY CODE NAVIGATOR
+
+            Positioned(
+                top: 5,
+                right: 16,
+                child: Container(
+                  height: 26,
+                  width: MediaQuery.of(context).size.width * 0.18,
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(19))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                     
+                      Text(
+                        code.toUpperCase(),
+                        style: textStyle(12, Colors.black45, FontWeight.w600),
+                      ),
+                    ],
                   ),
-                ],
+                ).asGlass(
+                    tintColor: Colors.lightBlue.shade700,
+                    clipBorderRadius: BorderRadius.circular(15.0),
+                    blurX: 2),
               ),
-            ).asGlass(
-                tintColor: Theme.of(context).dividerColor,
-                clipBorderRadius: BorderRadius.circular(15.0))),
+
+//DELIVERING COMPANY LOGO
         widget.package?['company'] != null
             ? const Positioned(
                 bottom: 18,
@@ -265,6 +303,8 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
       ],
     );
   }
+
+//DELETE METHOD
 
   _deleteDialog() {
     User? user = _auth.currentUser;

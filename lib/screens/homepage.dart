@@ -656,9 +656,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   color: Colors.lightBlue.shade600),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 10,
+                  const SizedBox(height: 10,),
+                   Container(
+                    height: 5,
+                    width: 40,
+                    decoration: const BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
                   ),
+
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                     child: StorageStream(warehouse: _warehouse),
@@ -692,8 +699,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   color: Colors.lightBlue.shade600),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 10,
+                  const SizedBox(height: 10,),
+                   Container(
+                    height: 5,
+                    width: 40,
+                    decoration: const BoxDecoration(
+                      color: Colors.white54,
+                      borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),

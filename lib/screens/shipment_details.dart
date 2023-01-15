@@ -14,18 +14,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ShipmentDetailsScreen extends StatefulWidget {
   const ShipmentDetailsScreen({
-    Key? key, required 
-    this.progress, this.package,
-    // required this.pickupAd,
-    // required this.shipmentId,
-    // required this.destination,
-    // required this.weight,
-    // required this.progress,
+    Key? key,
+    required this.progress,
+    this.package,
   }) : super(key: key);
-  // final String pickupAd;
-  // final String shipmentId;
-  // final String destination;
-  // final String weight;
   final int progress;
   final QueryDocumentSnapshot<Map<String, dynamic>>? package;
 
@@ -41,6 +33,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
   late String whatsappNo = "";
   late String message = "";
   String url = "";
+  bool? changes;
 
   @override
   void initState() {
@@ -49,13 +42,12 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     var _detailsProvider = Provider.of<ShipmentProvider>(context);
     var data = _detailsProvider.shipment;
     setState(() {
       parcelId = data?['shipmentId'];
+      changes = data?['accepted'];
     });
-
     int activeStep = data?['progress'];
     return Scaffold(
       backgroundColor: Theme.of(context).iconTheme.color,
@@ -64,20 +56,31 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
         elevation: 0,
         leading: IconButton(
             icon: const Icon(
-              AntDesign.leftcircleo,
+              AntDesign.closecircleo,
               color: Colors.white,
             ),
             onPressed: () {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => MainCourier()));
             }),
+        actions: [
+          munhu!.courierVerification == true && widget.package!['courierId'] == _auth.currentUser!.uid?
+          IconButton(
+              icon: const Icon(
+                MaterialCommunityIcons.package,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                pCode();
+              }): const SizedBox.shrink()
+        ],
       ),
       body: Stack(
         clipBehavior: Clip.none,
         children: [
           Container(
             margin: const EdgeInsets.only(right: 8.0, left: 8, bottom: 12),
-            height: data?["accepted"] == true
+            height: changes == true
                 ? MediaQuery.of(context).size.height * 0.63
                 : MediaQuery.of(context).size.height * 0.3,
             width: MediaQuery.of(context).size.width,
@@ -105,7 +108,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                       const SizedBox(
                         width: 10,
                       ),
-                      data['delivered'] == true
+                      changes == true
                           ? Row(
                               children: [
                                 Text('Delivered',
@@ -129,15 +132,16 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    data["accepted"] == true
+                    changes == true
                         ? Padding(
-                            padding: const EdgeInsets.only(left: 14.0, bottom: 15),
+                            padding:
+                                const EdgeInsets.only(left: 14.0, bottom: 15),
                             child: Text('Parcel Delivery Details',
                                 style: textStyle(
                                     14, Colors.black54, FontWeight.bold)),
                           )
                         : const SizedBox.shrink(),
-                    data["accepted"] == true
+                    changes == true
                         ? Container(
                             height: MediaQuery.of(context).size.height * .3,
                             width: MediaQuery.of(context).size.width,
@@ -559,8 +563,6 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
   }
 
   Future<dynamic> qrMethod() {
-
-
     return showModalBottomSheet(
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
@@ -656,6 +658,9 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                           'accepted': true,
                                           'progress': widget.progress + 1,
                                         });
+                                        setState(() {
+                                          changes == true;
+                                        });
                                         Future.delayed(const Duration(
                                                 microseconds: 2000))
                                             .then((value) =>
@@ -714,6 +719,87 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                       style: textStyle(
                                           14, Colors.white, FontWeight.w500),
                                     )),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -20,
+                right: MediaQuery.of(context).size.width * 0.45,
+                child: const SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white38,
+                    backgroundImage: AssetImage("assets/images/user.png"),
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  Future<dynamic> pCode() {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black87,
+        context: context,
+        builder: (context) {
+          return Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 80),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.14,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      image: const DecorationImage(
+                          image: AssetImage("assets/images/bg2.png"),
+                          fit: BoxFit.cover,
+                          opacity: 0.45),
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(19),
+                      ),
+                      color: Colors.lightBlue.shade600),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(19),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "Parcel Code",
+                                style: Theme.of(context).textTheme.headline1,
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "${widget.package!['shipmentId']}"
+                                    .toUpperCase(),
+                                style: Theme.of(context).textTheme.headline3,
                               ),
                               const SizedBox(
                                 height: 10,
@@ -1002,4 +1088,3 @@ void doNothing(BuildContext context) {
     'progress': 1,
   });
 }
-
