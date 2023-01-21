@@ -5,19 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:glass/glass.dart';
+import 'package:gofast/algorithm/logic.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/models/user_model.dart';
 import 'package:gofast/services/firebase_services.dart';
-import 'package:gofast/widgets/courier_streams/accepted.dart';
-import 'package:gofast/widgets/courier_streams/delivered.dart';
-import 'package:gofast/widgets/courier_streams/dispatched.dart';
-import 'package:gofast/widgets/courier_streams/job.dart';
-import 'package:gofast/widgets/courier_streams/picked.dart';
-import 'package:gofast/widgets/warehouse_stream.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+
+import '../exports/exported_widgets.dart';
 
 class CourierPage extends StatefulWidget {
   const CourierPage({
@@ -34,6 +31,13 @@ class _CourierPageState extends State<CourierPage>
     length: 5,
     vsync: this,
   );
+
+  String location = "Westgate Shopping Mall, Harare, Zimbabwe";
+  double lat1 = -17.8063929;
+  double lon1 = 30.9446058;
+  double lat2 = -17.7631738;
+  double lon2 = 30.978738;
+  String distance = "6.012971109171077";
 
   DateTime now = DateTime.now();
   String greeting = "";
@@ -210,7 +214,7 @@ class _CourierPageState extends State<CourierPage>
     return Container(
         height: 40,
         decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF).withOpacity(0.7),
+            color: const Color(0xFFFFFFFF).withOpacity(0.7),
             borderRadius: BorderRadius.circular(10)),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16.0, 8, 16, 8),
@@ -235,7 +239,10 @@ class _CourierPageState extends State<CourierPage>
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  print("clicked");
+                  Logix().getCoordinates(location);
+                },
                 child: Row(
                   children: [
                     const Icon(
@@ -395,14 +402,15 @@ class _CourierPageState extends State<CourierPage>
                   color: Colors.lightBlue.shade600),
               child: Column(
                 children: [
-                 const SizedBox(height: 10,),
-                   Container(
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
                     height: 5,
                     width: 40,
                     decoration: const BoxDecoration(
-                      color: Colors.white54,
-                      borderRadius: BorderRadius.all(Radius.circular(10))
-                    ),
+                        color: Colors.white54,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
@@ -621,12 +629,28 @@ class _CourierPageState extends State<CourierPage>
         });
   }
 
+    void getDataOnce() async {
+    final ref = _services.users.doc(_auth.currentUser?.uid).withConverter(
+          fromFirestore: UserData.fromFirestore,
+          toFirestore: (UserData userdata, _) => userdata.toFirestore(),
+        );
+    final docSnap = await ref.get();
+    final thisUser = docSnap.data(); // Convert to City object
+    if (thisUser != null && mounted) {
+      setState(() {
+        munhu = thisUser;
+      });
+    }
+  }
+
   void getShipmentStreams() {
     _jobStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
         .where('pickup', isEqualTo: false)
         .where('accepted', isEqualTo: false)
+        .where('delivered', isEqualTo: false)
+        .where('intransit', isEqualTo: false)
         .orderBy('createdAt', descending: false)
         .snapshots(includeMetadataChanges: false);
 
@@ -635,6 +659,8 @@ class _CourierPageState extends State<CourierPage>
         .where('category', isEqualTo: category)
         .where('courierId', isEqualTo: _auth.currentUser!.uid)
         .where('accepted', isEqualTo: true)
+        .where('pickup', isEqualTo: false)
+        .where('delivered', isEqualTo: false)
         .where('intransit', isEqualTo: false)
         .orderBy('createdAt', descending: true)
         .snapshots();
@@ -646,6 +672,7 @@ class _CourierPageState extends State<CourierPage>
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: false)
+        .where('delivered', isEqualTo: false)
         .orderBy('createdAt', descending: true)
         .snapshots();
 
@@ -674,17 +701,5 @@ class _CourierPageState extends State<CourierPage>
         .snapshots();
   }
 
-  void getDataOnce() async {
-    final ref = _services.users.doc(_auth.currentUser?.uid).withConverter(
-          fromFirestore: UserData.fromFirestore,
-          toFirestore: (UserData userdata, _) => userdata.toFirestore(),
-        );
-    final docSnap = await ref.get();
-    final thisUser = docSnap.data(); // Convert to City object
-    if (thisUser != null && mounted) {
-      setState(() {
-        munhu = thisUser;
-      });
-    }
-  }
+
 }

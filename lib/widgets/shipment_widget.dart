@@ -13,46 +13,11 @@ import 'package:easy_stepper/easy_stepper.dart';
 import 'package:provider/provider.dart';
 
 class ShipmentWidget extends StatefulWidget {
-  final String shipmentId;
-  final String category;
-  final String destination;
-  final String destinationNumber;
-  final String pickupAd;
-  final String pickupNumber;
-  final String sendBy;
-  final String weight;
-  // final String postedDate;
-  final int progress;
-  final bool pickup;
-  final bool intransit;
-  final bool delivered;
-  final bool accepted;
-  final String createdAt;
   final QueryDocumentSnapshot<Map<String, dynamic>>? package;
-
-  // final double startLat;
-  // final double startLng;
 
   const ShipmentWidget({
     super.key,
-    required this.shipmentId,
-    required this.category,
-    required this.destination,
-    required this.destinationNumber,
-    required this.pickupAd,
-    required this.pickupNumber,
-    required this.weight,
-    required this.pickup,
-    required this.createdAt,
-    required this.sendBy,
-    required this.delivered,
-    required this.accepted,
-    // required this.postedDate,
-    required this.progress,
-    required this.intransit,
     this.package,
-    // required this.startLat,
-    // required this.startLng,
   });
 
   @override
@@ -81,7 +46,7 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
                 MaterialPageRoute(
                     builder: (context) => ShipmentDetailsScreen(
                           package: widget.package,
-                          progress: widget.progress,
+                          // progress: widget.progress,
                         )));
           },
           child: Container(

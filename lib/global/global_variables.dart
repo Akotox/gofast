@@ -2,10 +2,9 @@ import 'package:gofast/models/user_model.dart';
 
 String loginUrlImage =
     "https://i.pinimg.com/originals/80/cf/b7/80cfb725b38d732dd1c26646eaf2d1e1.jpg";
-String signUpUrlImage =
-    "https://i.pinimg.com/originals/80/cf/b7/80cfb725b38d732dd1c26646eaf2d1e1.jpg";
-String drawerUrlImage =
-    'https://c4.wallpaperflare.com/wallpaper/188/344/977/starlight-starry-sky-night-sky-tree-wallpaper-preview.jpg';
+String apiKey =
+    "AIzaSyDnvwWssH0BbAt-H0tWbr9T3b6bIKWZQss";
+
 
 List<String> parcelSize = [
   "Food | Non Perishable",

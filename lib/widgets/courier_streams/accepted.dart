@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_vector_icons/flutter_vector_icons.dart';
-import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/exported_widgets.dart';
 
 class Accepted extends StatelessWidget {
@@ -42,30 +39,30 @@ class Accepted extends StatelessWidget {
                               const BorderRadius.all(Radius.circular(19)),
                           child: ShipmentWidget(
                             package:package,
-                            shipmentId: snapshot.data?.docs[index]
-                                ['shipmentId'],
-                            category: snapshot.data?.docs[index]['category'],
-                            destination: snapshot.data?.docs[index]
-                                ['destination'],
-                            destinationNumber: snapshot.data?.docs[index]
-                                ['destinationNumber'],
-                            pickupAd: snapshot.data?.docs[index]['pickupAd'],
-                            pickupNumber: snapshot.data?.docs[index]
-                                ['pickupNumber'],
-                            sendBy: snapshot.data?.docs[index]['sendBy'],
-                            weight: snapshot.data?.docs[index]['weight'],
-                            pickup: snapshot.data?.docs[index]['pickup'],
-                            createdAt: snapshot.data?.docs[index]
-                                ['createdAt'],
-                            delivered: snapshot.data?.docs[index]
-                                ['delivered'],
-                            accepted: snapshot.data?.docs[index]['accepted'],
-                            // startLat: snapshot.data?.docs[index]['startLat'],
-                            // startLng: snapshot.data?.docs[index]['startLng'],
-                            // postedDate: '',
-                            intransit: snapshot.data?.docs[index]
-                                ['intransit'],
-                            progress: snapshot.data?.docs[index]['progress'],
+                            // shipmentId: snapshot.data?.docs[index]
+                            //     ['shipmentId'],
+                            // category: snapshot.data?.docs[index]['category'],
+                            // destination: snapshot.data?.docs[index]
+                            //     ['destination'],
+                            // destinationNumber: snapshot.data?.docs[index]
+                            //     ['destinationNumber'],
+                            // pickupAd: snapshot.data?.docs[index]['pickupAd'],
+                            // pickupNumber: snapshot.data?.docs[index]
+                            //     ['pickupNumber'],
+                            // sendBy: snapshot.data?.docs[index]['sendBy'],
+                            // weight: snapshot.data?.docs[index]['weight'],
+                            // pickup: snapshot.data?.docs[index]['pickup'],
+                            // createdAt: snapshot.data?.docs[index]
+                            //     ['createdAt'],
+                            // delivered: snapshot.data?.docs[index]
+                            //     ['delivered'],
+                            // accepted: snapshot.data?.docs[index]['accepted'],
+                            // // startLat: snapshot.data?.docs[index]['startLat'],
+                            // // startLng: snapshot.data?.docs[index]['startLng'],
+                            // // postedDate: '',
+                            // intransit: snapshot.data?.docs[index]
+                            //     ['intransit'],
+                            // progress: snapshot.data?.docs[index]['progress'],
                           ),
                         ),
                       );
@@ -75,7 +72,7 @@ class Accepted extends StatelessWidget {
                   return const Empty();
                 }
               }
-              return const CircularProgressIndicator();
+              return const ErrorWid();
             },
           ),
         ));

@@ -15,10 +15,10 @@ import 'package:url_launcher/url_launcher.dart';
 class ShipmentDetailsScreen extends StatefulWidget {
   const ShipmentDetailsScreen({
     Key? key,
-    required this.progress,
+    // required this.progress,
     this.package,
   }) : super(key: key);
-  final int progress;
+  // final int progress;
   final QueryDocumentSnapshot<Map<String, dynamic>>? package;
 
   @override
@@ -33,7 +33,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
   late String whatsappNo = "";
   late String message = "";
   String url = "";
-  bool? changes;
+  // bool? changes;
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
     var data = _detailsProvider.shipment;
     setState(() {
       parcelId = data?['shipmentId'];
-      changes = data?['accepted'];
+      // changes = data?['accepted'];
     });
     int activeStep = data?['progress'];
     return Scaffold(
@@ -64,15 +64,17 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                   MaterialPageRoute(builder: (context) => MainCourier()));
             }),
         actions: [
-          munhu!.courierVerification == true && widget.package!['courierId'] == _auth.currentUser!.uid?
-          IconButton(
-              icon: const Icon(
-                MaterialCommunityIcons.package,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                pCode();
-              }): const SizedBox.shrink()
+          munhu!.courierVerification == true &&
+                  widget.package!['courierId'] == _auth.currentUser!.uid
+              ? IconButton(
+                  icon: const Icon(
+                    MaterialCommunityIcons.package,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    pCode();
+                  })
+              : const SizedBox.shrink()
         ],
       ),
       body: Stack(
@@ -80,7 +82,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
         children: [
           Container(
             margin: const EdgeInsets.only(right: 8.0, left: 8, bottom: 12),
-            height: changes == true
+            height: _detailsProvider.shipment!['accepted'] == true
                 ? MediaQuery.of(context).size.height * 0.63
                 : MediaQuery.of(context).size.height * 0.3,
             width: MediaQuery.of(context).size.width,
@@ -108,7 +110,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                       const SizedBox(
                         width: 10,
                       ),
-                      changes == true
+                      _detailsProvider.shipment!['delivered'] == true
                           ? Row(
                               children: [
                                 Text('Delivered',
@@ -132,7 +134,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    changes == true
+                    _detailsProvider.shipment!['accepted'] == true
                         ? Padding(
                             padding:
                                 const EdgeInsets.only(left: 14.0, bottom: 15),
@@ -141,7 +143,8 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                     14, Colors.black54, FontWeight.bold)),
                           )
                         : const SizedBox.shrink(),
-                    changes == true
+                    // changes == true
+                    _detailsProvider.shipment!['accepted'] == true
                         ? Container(
                             height: MediaQuery.of(context).size.height * .3,
                             width: MediaQuery.of(context).size.width,
@@ -641,7 +644,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                           .format(DateTime.now())
                                           .toString();
 
-                                      if (widget.progress == 0) {
+                                      if (widget.package!['progress'] == 0) {
                                         FirebaseFirestore.instance
                                             .collection('courier')
                                             .doc(parcelId)
@@ -656,16 +659,15 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                           'accepted_at': date,
                                           'createdAt': date,
                                           'accepted': true,
-                                          'progress': widget.progress + 1,
-                                        });
-                                        setState(() {
-                                          changes == true;
+                                          'progress':
+                                              widget.package!['progress'] + 1,
                                         });
                                         Future.delayed(const Duration(
                                                 microseconds: 2000))
                                             .then((value) =>
                                                 Navigator.pop(context));
-                                      } else if (widget.progress == 1) {
+                                      } else if (widget.package!['progress'] ==
+                                          1) {
                                         FirebaseFirestore.instance
                                             .collection('courier')
                                             .doc(parcelId)
@@ -673,13 +675,15 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                           'update': update,
                                           'pickup': true,
                                           'pickedAt': date,
-                                          'progress': widget.progress + 1,
+                                          'progress':
+                                              widget.package!['progress'] + 1,
                                         });
                                         Future.delayed(const Duration(
                                                 microseconds: 2000))
                                             .then((value) =>
                                                 Navigator.pop(context));
-                                      } else if (widget.progress == 2) {
+                                      } else if (widget.package!['progress'] ==
+                                          2) {
                                         FirebaseFirestore.instance
                                             .collection('courier')
                                             .doc(parcelId)
@@ -687,13 +691,15 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                           'update': update,
                                           'intransit': true,
                                           'intransit_time': date,
-                                          'progress': widget.progress + 1,
+                                          'progress':
+                                              widget.package!['progress'] + 1,
                                         });
                                         Future.delayed(const Duration(
                                                 microseconds: 2000))
                                             .then((value) =>
                                                 Navigator.pop(context));
-                                      } else if (widget.progress == 3) {
+                                      } else if (widget.package!['progress'] ==
+                                          3) {
                                         FirebaseFirestore.instance
                                             .collection('courier')
                                             .doc(parcelId)
@@ -701,7 +707,8 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                           'update': update,
                                           'deliveredAt': date,
                                           'delivered': true,
-                                          'progress': widget.progress + 1,
+                                          'progress':
+                                              widget.package!['progress'] + 1,
                                         });
                                         Future.delayed(const Duration(
                                                 microseconds: 2000))
