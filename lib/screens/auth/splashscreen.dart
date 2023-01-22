@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
+import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/services/app_userstate.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -50,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(
               height: 10,
             ),
-            Text("GoFasta", style: Theme.of(context).textTheme.headline1),
+            Text("GoFasta", style: textStyle(40, Colors.white, FontWeight.bold)),
           ],
         ),
       ),

@@ -32,12 +32,6 @@ class _CourierPageState extends State<CourierPage>
     vsync: this,
   );
 
-  String location = "Westgate Shopping Mall, Harare, Zimbabwe";
-  double lat1 = -17.8063929;
-  double lon1 = 30.9446058;
-  double lat2 = -17.7631738;
-  double lon2 = 30.978738;
-  String distance = "6.012971109171077";
 
   DateTime now = DateTime.now();
   String greeting = "";
@@ -58,9 +52,9 @@ class _CourierPageState extends State<CourierPage>
   @override
   void initState() {
     super.initState();
+    getDataOnce();
     getGreeting();
     getShipmentStreams();
-    getDataOnce();
   }
 
   @override
@@ -241,7 +235,7 @@ class _CourierPageState extends State<CourierPage>
               InkWell(
                 onTap: () {
                   print("clicked");
-                  Logix().getCoordinates(location);
+                  
                 },
                 child: Row(
                   children: [
@@ -629,7 +623,7 @@ class _CourierPageState extends State<CourierPage>
         });
   }
 
-    void getDataOnce() async {
+  void getDataOnce() async {
     final ref = _services.users.doc(_auth.currentUser?.uid).withConverter(
           fromFirestore: UserData.fromFirestore,
           toFirestore: (UserData userdata, _) => userdata.toFirestore(),
@@ -700,6 +694,4 @@ class _CourierPageState extends State<CourierPage>
         .orderBy('createdAt', descending: true)
         .snapshots();
   }
-
-
 }

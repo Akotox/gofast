@@ -6,17 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:glass/glass.dart';
+import 'package:gofast/algorithm/logic.dart';
 import 'package:gofast/exports/exported_widgets.dart';
-import 'package:gofast/global/global_variables.dart';
-import 'package:gofast/screens/send_parcel_widget.dart';
-import 'package:gofast/widgets/shipment_streams/in_delivered.dart';
-import 'package:gofast/widgets/shipment_streams/in_dispatch.dart';
-import 'package:gofast/widgets/shipment_streams/in_processing.dart';
-import 'package:gofast/widgets/shipment_streams/in_transit.dart';
-import 'package:gofast/widgets/shipment_streams/out_dispatch.dart';
-import 'package:gofast/widgets/shipment_streams/out_processing.dart';
-import 'package:gofast/widgets/shipment_streams/out_transit.dart';
-import 'package:gofast/widgets/warehouse_stream.dart';
 import 'package:intl/intl.dart';
 
 import 'package:lottie/lottie.dart';
@@ -38,6 +29,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   String? results;
   bool? courierVerification;
   final FirebaseAuth auth = FirebaseAuth.instance;
+  String location = "1576 Tynwald South Harare Zimbabwe";
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> _processingStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _processingReceiverStream;
@@ -496,7 +488,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
               InkWell(
                 onTap: () {
-                  idCode();
+                  Logix().getPickup(location);
+                  
+                  // idCode();
                 },
                 child: Row(
                   children: [
@@ -655,16 +649,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   color: Colors.lightBlue.shade600),
               child: Column(
                 children: [
-                  const SizedBox(height: 10,),
-                   Container(
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
                     height: 5,
                     width: 40,
                     decoration: const BoxDecoration(
-                      color: Colors.white54,
-                      borderRadius: BorderRadius.all(Radius.circular(10))
-                    ),
+                        color: Colors.white54,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                     child: StorageStream(warehouse: _warehouse),
@@ -698,14 +692,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   color: Colors.lightBlue.shade600),
               child: Column(
                 children: [
-                  const SizedBox(height: 10,),
-                   Container(
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
                     height: 5,
                     width: 40,
                     decoration: const BoxDecoration(
-                      color: Colors.white54,
-                      borderRadius: BorderRadius.all(Radius.circular(10))
-                    ),
+                        color: Colors.white54,
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),

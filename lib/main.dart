@@ -5,10 +5,13 @@ import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/providers/shipment.dart';
 import 'package:gofast/providers/shipment_state.dart';
 import 'package:gofast/screens/delivery_widget.dart';
+import 'package:get_storage/get_storage.dart';
+
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
+  await GetStorage.init();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MultiProvider(

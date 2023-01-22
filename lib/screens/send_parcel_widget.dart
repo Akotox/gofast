@@ -1,11 +1,13 @@
-import 'dart:convert';
+// import 'dart:convert'
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_stepper/cool_stepper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:gofast/algorithm/logic.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/services/firebase_services.dart';
@@ -33,6 +35,8 @@ class _SteppaState extends State<Steppa> {
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> _couriers;
   late Future<DocumentSnapshot<Map<String, dynamic>>> _getCompanies;
+  final business = GetStorage();
+  Payment? _payment = Payment.innbucks;
 
   final CollectionReference companiesCol =
       FirebaseFirestore.instance.collection('company');
@@ -57,8 +61,6 @@ class _SteppaState extends State<Steppa> {
     }
   }
 
-  String location = "1576 Tynwald South, Harare, Zimbabwe";
-
   @override
   void didChangeDependencies() {
     _getCompanies =
@@ -66,10 +68,10 @@ class _SteppaState extends State<Steppa> {
     super.didChangeDependencies();
   }
 
-  String productCategory = 'GoFasta';
+  String company = 'GoFasta';
+  String size = 'Small';
   String? _chosenValue;
   String? _chosenType;
-
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +88,12 @@ class _SteppaState extends State<Steppa> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
                   boxShadow: [
                     BoxShadow(
                       color: Theme.of(context).shadowColor,
                       spreadRadius: 0,
-                      blurRadius: 5,
+                      blurRadius: 2,
                       offset: const Offset(0, 0),
                     ),
                   ],
@@ -130,7 +132,6 @@ class _SteppaState extends State<Steppa> {
                   },
                 ),
               ),
-              
               FutureBuilder<DocumentSnapshot>(
                   future: _getCompanies,
                   builder: (context, snapshot) {
@@ -233,10 +234,10 @@ class _SteppaState extends State<Steppa> {
                                       .progressIndicatorTheme
                                       .color,
                                   value: "${companies![index]['name']}",
-                                  groupValue: productCategory,
+                                  groupValue: company,
                                   onChanged: (value) {
                                     setState(() {
-                                      productCategory = value.toString();
+                                      company = value.toString();
                                     });
                                   },
                                 ),
@@ -263,210 +264,210 @@ class _SteppaState extends State<Steppa> {
         subtitle: 'Choose a category type of your parcel',
         content: SingleChildScrollView(
             child: Column(
-              children: [Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).shadowColor,
-                      spreadRadius: 0,
-                      blurRadius: 5,
-                      offset: const Offset(0, 0),
-                    ),
-                  ],
-                ),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: _chosenType,
-                  dropdownColor: Colors.white,
-                  elevation: 0,
-                  style: textStyle(12, Colors.black, FontWeight.w700),
-                  underline: const SizedBox.shrink(),
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  items: <String>[
-                    'Documents',
-                    'Electronics',
-                    'Perishables',
-                    'Non Perishables',
-                    'Liquids',
-                    'Flamables ()',
-                    'Bulk',
-                    'Fragile',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  hint: Text(
-                    "Please choose product type",
-                    style: textStyle(14, Colors.black, FontWeight.bold),
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).shadowColor,
+                    spreadRadius: 0,
+                    blurRadius: 2,
+                    offset: const Offset(0, 0),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _chosenType = value;
-                    });
-                  },
-                ),
+                ],
               ),
-              
-                FutureBuilder<DocumentSnapshot>(
-                    future: _getCompanies,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                            child: Lottie.asset("assets/json/delivery.json"));
-                      } else {
-                        if (snapshot.data == null) {
-                          const Center(
-                            child: Text('No companies available'),
-                          );
-                        }
-                      }
-                      var companies = snapshot.data!['sizes'];
-                      return ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return Container(
-                              // margin: const EdgeInsets.only(
-                              //   bottom: 6,
-                              // ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: _chosenType,
+                dropdownColor: Colors.white,
+                elevation: 0,
+                style: textStyle(12, Colors.black, FontWeight.w700),
+                underline: const SizedBox.shrink(),
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                items: <String>[
+                  'Documents',
+                  'Electronics',
+                  'Perishables',
+                  'Non Perishables',
+                  'Liquids',
+                  'Flamables',
+                  'Bulk',
+                  'Fragile',
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                hint: Text(
+                  "Please choose product type",
+                  style: textStyle(14, Colors.black, FontWeight.bold),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _chosenType = value;
+                  });
+                },
+              ),
+            ),
+            FutureBuilder<DocumentSnapshot>(
+                future: _getCompanies,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                        child: Lottie.asset("assets/json/delivery.json"));
+                  } else {
+                    if (snapshot.data == null) {
+                      const Center(
+                        child: Text('No companies available'),
+                      );
+                    }
+                  }
+                  var companies = snapshot.data!['sizes'];
+                  return ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          // margin: const EdgeInsets.only(
+                          //   bottom: 6,
+                          // ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          height: 90,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(19),
+                            color: Theme.of(context).backgroundColor,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Theme.of(context).shadowColor,
+                                spreadRadius: 0,
+                                blurRadius: 5,
+                                offset: const Offset(0, 0),
                               ),
-                              height: 90,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(19),
-                                color: Theme.of(context).backgroundColor,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Theme.of(context).shadowColor,
-                                    spreadRadius: 0,
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 0),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            ],
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Radio(
-                                        activeColor: Theme.of(context)
-                                            .progressIndicatorTheme
-                                            .color,
-                                        value: "${companies![index]['name']}",
-                                        groupValue: productCategory,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            productCategory = value.toString();
-                                          });
-                                        },
-                                      ),
+                                  Radio(
+                                    activeColor: Theme.of(context)
+                                        .progressIndicatorTheme
+                                        .color,
+                                    value: "${companies![index]['name']}",
+                                    groupValue: size,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        size = value.toString();
+                                      });
+                                    },
+                                  ),
 
-                                      Container(
-                                        height: 40,
-                                        width: 40,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(40),
-                                          image: DecorationImage(
-                                            image: AssetImage(type[index]),
-                                          ),
+                                  Container(
+                                    height: 40,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(40),
+                                      image: DecorationImage(
+                                        image: AssetImage(type[index]),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "${companies![index]['name']}",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline4,
+                                      ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.35,
+                                        child: Text(
+                                          "${companies![index]['condition']}",
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline5,
                                         ),
                                       ),
                                       const SizedBox(
-                                        width: 15,
+                                        height: 3,
                                       ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "${companies![index]['name']}",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headline4,
-                                          ),
-                                          const SizedBox(
-                                            height: 8,
-                                          ),
-                                          SizedBox(
-                                            width:
-                                                MediaQuery.of(context).size.width *
-                                                    0.35,
-                                            child: Text(
-                                              "${companies![index]['condition']}",
-                                              overflow: TextOverflow.ellipsis,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 3,
-                                          ),
-                                        ],
-                                      ),
-                                      //  const SizedBox(
-                                      //   width: 13,
-                                      // ),
-                                      companies![index]['name'] == productCategory
-                                          ? Row(
-                                              children: [
-                                                InkWell(
-                                                    onTap: () {
-                                                      decrement();
-                                                    },
-                                                    child: const Icon(
-                                                      CupertinoIcons.minus_circle,
-                                                      color: Colors.grey,
-                                                    )),
-                                                Container(
-                                                  width: 30,
-                                                  child: Center(
-                                                      child: Text("$_counter",
-                                                          style: textStyle(
-                                                              16,
-                                                              Colors.black87,
-                                                              FontWeight.w700))),
-                                                ),
-                                                InkWell(
-                                                    onTap: () {
-                                                      increment();
-                                                    },
-                                                    child: const Icon(
-                                                        CupertinoIcons.plus_circle,
-                                                        color: Colors.grey)),
-                                              ],
-                                            )
-                                          : const SizedBox.shrink()
                                     ],
                                   ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
+                                  //  const SizedBox(
+                                  //   width: 13,
+                                  // ),
+                                  companies![index]['name'] == size
+                                      ? Row(
+                                          children: [
+                                            InkWell(
+                                                onTap: () {
+                                                  decrement();
+                                                },
+                                                child: const Icon(
+                                                  CupertinoIcons.minus_circle,
+                                                  color: Colors.grey,
+                                                )),
+                                            Container(
+                                              width: 30,
+                                              child: Center(
+                                                  child: Text("$_counter",
+                                                      style: textStyle(
+                                                          16,
+                                                          Colors.black87,
+                                                          FontWeight.w700))),
+                                            ),
+                                            InkWell(
+                                                onTap: () {
+                                                  increment();
+                                                },
+                                                child: const Icon(
+                                                    CupertinoIcons.plus_circle,
+                                                    color: Colors.grey)),
+                                          ],
+                                        )
+                                      : const SizedBox.shrink()
                                 ],
                               ),
-                            );
-                          },
-                          itemCount: snapshot.data!['sizes'].length,
-                          separatorBuilder: (BuildContext context, int index) {
-                            return const Divider(
-                              thickness: 0,
-                              indent: 0,
-                              color: Colors.transparent,
-                            );
-                          });
-                    }),
-              ],
-            )),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      itemCount: snapshot.data!['sizes'].length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const Divider(
+                          thickness: 0,
+                          indent: 0,
+                          color: Colors.transparent,
+                        );
+                      });
+                }),
+          ],
+        )),
         validation: () {
           return null;
         },
@@ -497,11 +498,10 @@ class _SteppaState extends State<Steppa> {
                     return 'Phone number is required ';
                   }
                   return null;
-                  
                 },
                 controller: _phoneNumber,
               ),
-              productCategory == "Custom"
+              size == "Custom"
                   ? _buildTextField(
                       labelText: 'Pacel Details',
                       hintText: "Tikuda kutama ",
@@ -568,7 +568,8 @@ class _SteppaState extends State<Steppa> {
     final stepper = CoolStepper(
       showErrorSnackbar: false,
       onCompleted: () {
-        _uploadShipment();
+        business.erase;
+        _navigator();
       },
       steps: steps,
       config: const CoolStepperConfig(
@@ -632,6 +633,315 @@ class _SteppaState extends State<Steppa> {
     );
   }
 
+  _navigator() async {
+    // final data = GetStorage();
+    Logix().getPickup(_pickUpAddress.text);
+    Logix().getDestination(_destination.text);
+    Logix().getDistance(business.read("lat1"), business.read("lon1"),
+        business.read("lat2"), business.read("lon2"));
+    await Future.delayed(const Duration(milliseconds: 4000), () {});
+    payment();
+  }
+
+  payment() {
+    showModalBottomSheet(
+        isDismissible: true,
+        isScrollControlled: true,
+        enableDrag: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: Colors.black54,
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, setState) => Container(
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: BoxDecoration(
+                  image: const DecorationImage(
+                      image: AssetImage("assets/images/extended.png"),
+                      fit: BoxFit.cover,
+                      opacity: 0.45),
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(19),
+                      topRight: Radius.circular(19)),
+                  color: Colors.lightBlue.shade600),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        'Parcel Summary',
+                        style: textStyle(16, Colors.white70, FontWeight.bold),
+                      ),
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      decoration: const BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("assets/images/extended.png"),
+                              fit: BoxFit.cover,
+                              opacity: 0.54),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(19),
+                          ),
+                          color: Colors.white),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 8.0, left: 8, top: 8),
+                              child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.23,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white38,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      12.0, 12, 12, 0),
+                                  child: Row(
+                                    // crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.5,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.26,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            DetailsWidget(
+                                              heading:
+                                                  CupertinoIcons.location_solid,
+                                              head: "Pick-up",
+                                              title: _pickUpAddress.text,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            DetailsWidget(
+                                              heading: Icons.whatsapp_outlined,
+                                              head: "Pick-up Number",
+                                              title: _phoneNumber.text,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            DetailsWidget(
+                                              heading:
+                                                  CupertinoIcons.location_solid,
+                                              head: "Destination",
+                                              title: _destination.text,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            DetailsWidget(
+                                              heading: Icons.whatsapp_outlined,
+                                              head: "Destination Number",
+                                              title: _destinationNumber.text,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.009,
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.28,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.26,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            DetailsWidget(
+                                              heading:
+                                                  MaterialCommunityIcons.scale,
+                                              head: "Weight ",
+                                              title:
+                                                  "${_counter.toString()} kgs",
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            DetailsWidget(
+                                              heading: Entypo.shopping_bag,
+                                              head: "Product Type ",
+                                              title: _chosenType!,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            DetailsWidget(
+                                              heading: AntDesign.clockcircleo,
+                                              head: "Delivery Period ",
+                                              title: _chosenValue!,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            DetailsWidget(
+                                              heading: MaterialCommunityIcons
+                                                  .office_building,
+                                              head: "Delivery Company ",
+                                              title: company,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Divider(),
+                            RadioListTile<Payment>(
+                              visualDensity: VisualDensity.compact,
+                              dense: true,
+                              activeColor: Theme.of(context).dividerColor,
+                              title: Text(
+                                'Innbucks',
+                                style: Theme.of(context).textTheme.headline4,
+                              ),
+                              value: Payment.innbucks,
+                              groupValue: _payment,
+                              onChanged: (Payment? value) {
+                                setState(() {
+                                  _payment = value;
+                                });
+                              },
+                            ),
+                            Divider(),
+                            RadioListTile<Payment>(
+                              visualDensity: VisualDensity.compact,
+                              dense: true,
+                              activeColor: Theme.of(context).dividerColor,
+                              title: Row(
+                                children: [
+                                  Text(
+                                    'Ecocash',
+                                    style:
+                                        Theme.of(context).textTheme.headline4,
+                                  ),
+                                ],
+                              ),
+                              value: Payment.ecocash,
+                              groupValue: _payment,
+                              onChanged: (Payment? value) {
+                                setState(() {
+                                  _payment = value;
+                                });
+                              },
+                            ),
+                            Divider(),
+                            RadioListTile<Payment>(
+                              visualDensity: VisualDensity.compact,
+                              dense: true,
+                              activeColor: Theme.of(context).dividerColor,
+                              title: Row(
+                                children: [
+                                  Text(
+                                    'Wallet',
+                                    style:
+                                        Theme.of(context).textTheme.headline4,
+                                  ),
+                                ],
+                              ),
+                              value: Payment.balance,
+                              groupValue: _payment,
+                              onChanged: (Payment? value) {
+                                setState(() {
+                                  _payment = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 14.0, bottom: 20, right: 14),
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(19)),
+                                    color: Colors.black12),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        Text(
+                                          "${business.read('distance').toStringAsFixed(3)} KM",
+                                          style: textStyle(20, Colors.black,
+                                              FontWeight.bold),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        Text(
+                                          "\$3.50",
+                                          style: textStyle(20, Colors.black,
+                                              FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                    MaterialButton(
+                                      visualDensity: VisualDensity.compact,
+                                      onPressed: () {},
+                                      child: Container(
+                                          padding:
+                                              EdgeInsets.fromLTRB(6, 6, 6, 6),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(19)),
+                                            color: Colors.lightBlue.shade600,
+                                          ),
+                                          child: Text(
+                                            "Checkout".toUpperCase(),
+                                            style: textStyle(16, Colors.white,
+                                                FontWeight.bold),
+                                          )),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
   void _uploadShipment() async {
     final shipmentId = const Uuid().v4();
     User? user = FirebaseAuth.instance.currentUser;
@@ -653,7 +963,7 @@ class _SteppaState extends State<Steppa> {
           'pickupAd': _pickUpAddress.text,
           'pickupNumber': _phoneNumber.text,
           'destination': _destination.text,
-          'category': productCategory,
+          'category': size,
           'destinationNumber': _destinationNumber.text,
           'pickup': false,
           'delivered': false,
@@ -686,7 +996,7 @@ class _SteppaState extends State<Steppa> {
         _pickUpAddress.clear();
         setState(() {
           _counter = 0;
-          productCategory = 'Others';
+          size = 'Small';
         });
       } finally {
         setState(() {
@@ -698,6 +1008,8 @@ class _SteppaState extends State<Steppa> {
     }
   }
 
+  void doNothing(BuildContext context) {}
+
   @override
   void dispose() {
     _pickUpAddress.dispose();
@@ -706,185 +1018,84 @@ class _SteppaState extends State<Steppa> {
 
     super.dispose();
   }
+}
 
-  Widget deliveryTime() {
-    return Container(
-        height: 98,
-        decoration: BoxDecoration(
-            color: const Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(19),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).shadowColor,
-                spreadRadius: 0,
-                blurRadius: 5,
-                offset: const Offset(0, 0),
-              ),
-            ]),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0.0, 8, 6, 8),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      // scanBarCode();
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Radio(
-                          activeColor:
-                              Theme.of(context).progressIndicatorTheme.color,
-                          value: "",
-                          visualDensity: VisualDensity.compact,
-                          groupValue: productCategory,
-                          onChanged: (value) {
-                            setState(() {
-                              productCategory = value.toString();
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          '< 6HRS'.toUpperCase(),
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                      ],
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      print("clicked");
-                      Logix().getCoordinates(location);
-                    },
-                    child: Row(
-                      children: [
-                        const Icon(
-                          MaterialCommunityIcons.barcode_scan,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          'Barcode Scanner'.toUpperCase(),
-                          style: Theme.of(context).textTheme.headline5,
-                        ),
-                      ],
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const DeliveryBoy()));
-                    },
-                    child: InkWell(
-                      onTap: () {
-                        // warehousesList();
-                      },
-                      child: Row(
-                        children: [
-                          const Icon(MaterialCommunityIcons.warehouse),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Warehouses'.toUpperCase(),
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      // scanBarCode();
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Radio(
-                          activeColor:
-                              Theme.of(context).progressIndicatorTheme.color,
-                          value: "",
-                          visualDensity: VisualDensity.compact,
-                          groupValue: productCategory,
-                          onChanged: (value) {
-                            setState(() {
-                              productCategory = value.toString();
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          '< 6HRS'.toUpperCase(),
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                      ],
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      print("clicked");
-                      Logix().getCoordinates(location);
-                    },
-                    child: Row(
-                      children: [
-                        const Icon(
-                          MaterialCommunityIcons.barcode_scan,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          'Barcode Scanner'.toUpperCase(),
-                          style: Theme.of(context).textTheme.headline5,
-                        ),
-                      ],
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const DeliveryBoy()));
-                    },
-                    child: InkWell(
-                      onTap: () {
-                        // warehousesList();
-                      },
-                      child: Row(
-                        children: [
-                          const Icon(MaterialCommunityIcons.warehouse),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Warehouses'.toUpperCase(),
-                            style: Theme.of(context).textTheme.headline5,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ));
+class DetailsWidget extends StatelessWidget {
+  const DetailsWidget({
+    Key? key,
+    required this.heading,
+    required this.head,
+    required this.title,
+  }) : super(key: key);
+
+  final IconData heading;
+  final String head;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Icon(
+              heading,
+              size: 12,
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+              head,
+              style: textStyle(10, Colors.black54, FontWeight.w700),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 3,
+        ),
+        Row(
+          children: [
+            const SizedBox(
+              width: 18,
+            ),
+            Text(title,
+                textAlign: TextAlign.justify,
+                style: textStyle(10, Colors.black87, FontWeight.w600)),
+          ],
+        ),
+      ],
+    );
   }
 }
+// ListTile(
+//   leading: SizedBox(
+//       width: 30,
+//       height: 30,
+//       child: Image.asset(
+//         "assets/images/digi.png",
+//         color: Colors.green,
+//       )),
+//   title: Text(
+//     "Wallet",
+//     style: Theme.of(context).textTheme.headline4,
+//   ),
+//   trailing: const Icon(
+//     AntDesign.right,
+//     size: 16,
+//   ),
+// ),
+// ListTile(
+//   leading: SizedBox(
+//       width: 30,
+//       height: 30,
+//       child: Image.asset("assets/images/eco.png")),
+//   title: Text(
+//     "Ecocash",
+//     style: Theme.of(context).textTheme.headline4,
+//   ),
+//   trailing: const Icon(
+//     AntDesign.right,
+//     size: 16,
+//   ),
+// ),
