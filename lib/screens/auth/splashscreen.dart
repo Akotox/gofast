@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/services/app_userstate.dart';
+import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -18,9 +19,9 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigator() async {
-    await Future.delayed(const Duration(milliseconds: 2000), () {});
+    await Future.delayed(const Duration(milliseconds: 1000), () {});
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => AppUserState()));
+        context, MaterialPageRoute(builder: (context) => const AppUserState()));
   }
 
   @override
@@ -31,27 +32,23 @@ class _SplashScreenState extends State<SplashScreen> {
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: Theme.of(context).iconTheme.color,
-          // image: DecorationImage(
-          //     image: AssetImage(
-          //       'assets/images/bg.png',
-          //     ),
-          // fit: BoxFit.none),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-                width: 150,
-                height: 150,
-                child: Image.asset(
-                  "assets/images/digi.png",
-                  color: Colors.white,
-                )),
             SizedBox(
-              height: 10,
+                width: 200,
+                height: 200,
+                child: Lottie.asset(
+                  "assets/json/delivery.json",
+                  // color: Colors.white,
+                )),
+            const SizedBox(
+              height: 8,
             ),
-            Text("GoFasta", style: textStyle(40, Colors.white, FontWeight.bold)),
+            Text("GoFasta", style: textStyle(52, Colors.white, FontWeight.bold)),
+             Text("Reliability in every delivery", style: textStyle(16, Colors.white38, FontWeight.w500))
           ],
         ),
       ),

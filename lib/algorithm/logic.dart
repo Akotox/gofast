@@ -48,7 +48,7 @@ class Logix {
   }
 
   double getDistance(double lat1, double lon1, double lat2, double lon2) {
-    final distance = GetStorage();
+    final business = GetStorage();
 
     const double earthRadius = 6371; // in kilometers
 
@@ -62,9 +62,10 @@ class Logix {
     var c = 2 * atan2(sqrt(a), sqrt(1 - a));
     var d = earthRadius * c;
 
-    distance.write('distance', d);
-    print("Your distance is ${distance.read("distance")}");
-
+    business.write('distance', d.toStringAsFixed(3));
+    business.listenKey('distance', (distance) {
+      print("Your distance is ${distance}");
+    });
     return d;
   }
 

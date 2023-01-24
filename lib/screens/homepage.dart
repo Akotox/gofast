@@ -8,6 +8,8 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:glass/glass.dart';
 import 'package:gofast/algorithm/logic.dart';
 import 'package:gofast/exports/exported_widgets.dart';
+import 'package:gofast/models/user_model.dart';
+import 'package:gofast/services/firebase_services.dart';
 import 'package:intl/intl.dart';
 
 import 'package:lottie/lottie.dart';
@@ -28,8 +30,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   String? category;
   String? results;
   bool? courierVerification;
-  final FirebaseAuth auth = FirebaseAuth.instance;
   String location = "1576 Tynwald South Harare Zimbabwe";
+
+  FirebaseServices _services = FirebaseServices();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   late Stream<QuerySnapshot<Map<String, dynamic>>> _processingStream;
   late Stream<QuerySnapshot<Map<String, dynamic>>> _processingReceiverStream;
@@ -45,6 +49,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     getStreams();
+    // print(munhu!.phoneNumber);
   }
 
   void getStreams() {
@@ -53,7 +58,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _processingStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('sendBy', isEqualTo: auth.currentUser!.uid)
+        .where('sendBy', isEqualTo: _auth.currentUser!.uid)
         .where('pickup', isEqualTo: false)
         .where('accepted', isEqualTo: false)
         .orderBy('createdAt', descending: true)
@@ -62,7 +67,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _processingReceiverStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu?.phoneNumber)
         .where('pickup', isEqualTo: false)
         .where('accepted', isEqualTo: false)
         .orderBy('createdAt', descending: true)
@@ -71,7 +76,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _pickedStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('sendBy', isEqualTo: auth.currentUser!.uid)
+        .where('sendBy', isEqualTo: _auth.currentUser!.uid)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: false)
@@ -81,7 +86,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _pickStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu?.phoneNumber)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: false)
@@ -91,7 +96,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _intransitDeliveryStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('sendBy', isEqualTo: auth.currentUser!.uid)
+        .where('sendBy', isEqualTo: _auth.currentUser!.uid)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: true)
@@ -102,7 +107,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _intransitStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu?.phoneNumber)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: true)
@@ -113,7 +118,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _deliveredStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('sendBy', isEqualTo: auth.currentUser!.uid)
+        .where('sendBy', isEqualTo: _auth.currentUser!.uid)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: true)
@@ -124,7 +129,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _deliveryStream = FirebaseFirestore.instance
         .collection('courier')
         .where('category', isEqualTo: category)
-        .where('destinationNumber', isEqualTo: munhu!.phoneNumber)
+        .where('destinationNumber', isEqualTo: munhu?.phoneNumber)
         .where('pickup', isEqualTo: true)
         .where('accepted', isEqualTo: true)
         .where('intransit', isEqualTo: true)
@@ -489,7 +494,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               InkWell(
                 onTap: () {
                   Logix().getPickup(location);
-                  
+
                   // idCode();
                 },
                 child: Row(

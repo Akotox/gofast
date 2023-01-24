@@ -25,6 +25,8 @@ class _SteppaState extends State<Steppa> {
   final _formKey = GlobalKey<FormState>();
 
   FirebaseServices _service = FirebaseServices();
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   final _sndformKey = GlobalKey<FormState>();
   final TextEditingController _pickUpAddress = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
@@ -567,8 +569,7 @@ class _SteppaState extends State<Steppa> {
 
     final stepper = CoolStepper(
       showErrorSnackbar: false,
-      onCompleted: () {
-        business.erase;
+      onCompleted: () async {
         _navigator();
       },
       steps: steps,
@@ -598,7 +599,7 @@ class _SteppaState extends State<Steppa> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.1,
                 ),
-                Text('Welcome to our Courier Center'.toUpperCase(),
+                Text('Welcome to GoFasta Courier Center'.toUpperCase(),
                     style: textStyle(14, Colors.white, FontWeight.bold))
               ],
             ),
@@ -634,20 +635,19 @@ class _SteppaState extends State<Steppa> {
   }
 
   _navigator() async {
-    // final data = GetStorage();
     Logix().getPickup(_pickUpAddress.text);
     Logix().getDestination(_destination.text);
+    await Future.delayed(const Duration(milliseconds: 2000), () {});
     Logix().getDistance(business.read("lat1"), business.read("lon1"),
         business.read("lat2"), business.read("lon2"));
-    await Future.delayed(const Duration(milliseconds: 4000), () {});
     payment();
   }
 
   payment() {
     showModalBottomSheet(
-        isDismissible: true,
+        isDismissible: false,
         isScrollControlled: true,
-        enableDrag: true,
+        enableDrag: false,
         backgroundColor: Colors.transparent,
         barrierColor: Colors.black54,
         context: context,
@@ -670,9 +670,21 @@ class _SteppaState extends State<Steppa> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        'Parcel Summary',
-                        style: textStyle(16, Colors.white70, FontWeight.bold),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Parcel Summary',
+                            style:
+                                textStyle(16, Colors.white70, FontWeight.bold),
+                          ),
+                          InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                                business.erase();
+                              },
+                              child: const Icon(AntDesign.closecircleo, color: Colors.white,))
+                        ],
                       ),
                     ),
                     Container(
@@ -813,7 +825,7 @@ class _SteppaState extends State<Steppa> {
                                 ),
                               ),
                             ),
-                            Divider(),
+                            const Divider(),
                             RadioListTile<Payment>(
                               visualDensity: VisualDensity.compact,
                               dense: true,
@@ -830,7 +842,7 @@ class _SteppaState extends State<Steppa> {
                                 });
                               },
                             ),
-                            Divider(),
+                            const Divider(),
                             RadioListTile<Payment>(
                               visualDensity: VisualDensity.compact,
                               dense: true,
@@ -852,7 +864,7 @@ class _SteppaState extends State<Steppa> {
                                 });
                               },
                             ),
-                            Divider(),
+                            const Divider(),
                             RadioListTile<Payment>(
                               visualDensity: VisualDensity.compact,
                               dense: true,
@@ -895,7 +907,7 @@ class _SteppaState extends State<Steppa> {
                                           width: 15,
                                         ),
                                         Text(
-                                          "${business.read('distance').toStringAsFixed(3)} KM",
+                                          "${business.read('distance')} KM",
                                           style: textStyle(20, Colors.black,
                                               FontWeight.bold),
                                         ),
@@ -914,9 +926,9 @@ class _SteppaState extends State<Steppa> {
                                       onPressed: () {},
                                       child: Container(
                                           padding:
-                                              EdgeInsets.fromLTRB(6, 6, 6, 6),
+                                              const EdgeInsets.fromLTRB(6, 6, 6, 6),
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(
+                                            borderRadius: const BorderRadius.all(
                                                 Radius.circular(19)),
                                             color: Colors.lightBlue.shade600,
                                           ),
@@ -1068,34 +1080,3 @@ class DetailsWidget extends StatelessWidget {
     );
   }
 }
-// ListTile(
-//   leading: SizedBox(
-//       width: 30,
-//       height: 30,
-//       child: Image.asset(
-//         "assets/images/digi.png",
-//         color: Colors.green,
-//       )),
-//   title: Text(
-//     "Wallet",
-//     style: Theme.of(context).textTheme.headline4,
-//   ),
-//   trailing: const Icon(
-//     AntDesign.right,
-//     size: 16,
-//   ),
-// ),
-// ListTile(
-//   leading: SizedBox(
-//       width: 30,
-//       height: 30,
-//       child: Image.asset("assets/images/eco.png")),
-//   title: Text(
-//     "Ecocash",
-//     style: Theme.of(context).textTheme.headline4,
-//   ),
-//   trailing: const Icon(
-//     AntDesign.right,
-//     size: 16,
-//   ),
-// ),

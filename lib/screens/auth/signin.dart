@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:glass/glass.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/export_services.dart';
-import 'package:gofast/global/global_methods.dart';
-import 'package:gofast/providers/user.dart';
 import 'package:gofast/widgets/custom_snack.dart';
 
 import 'package:google_fonts/google_fonts.dart';
@@ -22,8 +20,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _animation;
+  // late AnimationController _animationController;
+  // late Animation<double> _animation;
   late final TextEditingController _emailController =
       TextEditingController(text: '');
   late final TextEditingController _passwordController =
@@ -37,31 +35,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    _animationController.dispose();
+    // _animationController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
-  }
-
-//animation
-  @override
-  void initState() {
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 20));
-    _animation =
-        CurvedAnimation(parent: _animationController, curve: Curves.linear)
-          ..addListener(() {
-            setState(() {});
-          })
-          ..addStatusListener((animationStatus) {
-            if (animationStatus == AnimationStatus.completed) {
-              _animationController.reset();
-              _animationController.forward();
-            }
-          });
-    _animationController.forward();
-    super.initState();
   }
 
   void _submitFormOnLogin() async {
@@ -92,8 +70,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             content: CustomSnackbarContent(
               message: "Oh snap!",
               errorText: ("Error: " + error.toString()),
-              containerClr: Color.fromRGBO(3, 62, 101, 1),
-              bubblesClr: Color(0xFF062026),
+              containerClr: const Color.fromRGBO(3, 62, 101, 1),
+              bubblesClr: const Color(0xFF062026),
             ),
           ),
         );
@@ -111,36 +89,34 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
-          
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).iconTheme.color,
               image: const DecorationImage(
-                image: AssetImage("assets/images/extended.png"),
-                fit: BoxFit.cover,opacity: 0.3
-              ),
+                  image: AssetImage("assets/images/extended.png"),
+                  fit: BoxFit.cover,
+                  opacity: 0.3),
             ),
           ),
           ListView(
             children: [
-              
-                 
-                   SizedBox(
-                    height: MediaQuery.of(context).size.height*0.15,
-                  ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.15,
+              ),
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                 Positioned(
+                  Positioned(
                     right: 0,
                     left: 0,
                     bottom: -46,
-                     child: Lottie.asset("assets/json/delivery.json",fit: BoxFit.cover
-                      ),
-                   ),
+                    child: Lottie.asset("assets/json/delivery.json",
+                        fit: BoxFit.cover),
+                  ),
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 15),
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+                    margin: const EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 25),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(19),
                       color: Colors.black54,
@@ -154,7 +130,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           ),
 
                           //email
-                          EmailField(passwordFocusNode: _passwordFocusNode, emailController: _emailController),
+                          EmailField(
+                              passwordFocusNode: _passwordFocusNode,
+                              emailController: _emailController),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.025,
                           ),
@@ -199,7 +177,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               hintStyle:
                                   textStyle(16, Colors.grey, FontWeight.normal),
                               isDense: true,
-                              contentPadding: EdgeInsets.all(6),
+                              contentPadding: const EdgeInsets.all(6),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
                                 borderSide:
@@ -212,7 +190,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                               ),
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(30),
-                                borderSide: const BorderSide(color: Color(0xFFA1403B)),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFFA1403B)),
                               ),
                             ),
                           ),
@@ -306,20 +285,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
-                  ).asGlass(
-                    tintColor: Colors.transparent,
-                    blurX: 4,
-                    blurY: 4
-                  ),
-
-                   
-                   
-                
+                  ).asGlass(tintColor: Colors.transparent, blurX: 4, blurY: 4),
                 ],
               ),
             ],
           ),
-          
         ],
       ),
     );
@@ -331,7 +301,9 @@ class EmailField extends StatelessWidget {
     Key? key,
     required FocusNode passwordFocusNode,
     required TextEditingController emailController,
-  }) : _passwordFocusNode = passwordFocusNode, _emailController = emailController, super(key: key);
+  })  : _passwordFocusNode = passwordFocusNode,
+        _emailController = emailController,
+        super(key: key);
 
   final FocusNode _passwordFocusNode;
   final TextEditingController _emailController;
@@ -341,8 +313,8 @@ class EmailField extends StatelessWidget {
     return TextFormField(
       cursorColor: Colors.white,
       textInputAction: TextInputAction.next,
-      onEditingComplete: () => FocusScope.of(context)
-          .requestFocus(_passwordFocusNode),
+      onEditingComplete: () =>
+          FocusScope.of(context).requestFocus(_passwordFocusNode),
       keyboardType: TextInputType.emailAddress,
       controller: _emailController,
       validator: (value) {
@@ -352,8 +324,7 @@ class EmailField extends StatelessWidget {
           return null;
         }
       },
-      style:
-          textStyle(18, Colors.white, FontWeight.normal),
+      style: textStyle(18, Colors.white, FontWeight.normal),
       decoration: InputDecoration(
         hintText: 'Email ',
         prefixIcon: const Icon(
@@ -362,17 +333,14 @@ class EmailField extends StatelessWidget {
         ),
         isDense: true,
         contentPadding: const EdgeInsets.all(6),
-        hintStyle:
-            textStyle(16, Colors.grey, FontWeight.normal),
+        hintStyle: textStyle(16, Colors.grey, FontWeight.normal),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide:
-              const BorderSide(color: Colors.white),
+          borderSide: const BorderSide(color: Colors.white),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide:
-              const BorderSide(color: Colors.white),
+          borderSide: const BorderSide(color: Colors.white),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),

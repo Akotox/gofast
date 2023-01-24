@@ -17,13 +17,6 @@ class MainCourier extends StatefulWidget {
 
 class _MainCourierState extends State<MainCourier> {
   int pageIndex = 1;
-  // FirebaseServices _services = FirebaseServices();
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
 
 
   List<Widget> pageList = <Widget>[
