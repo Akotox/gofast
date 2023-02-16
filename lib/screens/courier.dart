@@ -5,14 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:glass/glass.dart';
-import 'package:gofast/algorithm/logic.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/models/user_model.dart';
 import 'package:gofast/services/firebase_services.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
 
 import '../exports/exported_widgets.dart';
 

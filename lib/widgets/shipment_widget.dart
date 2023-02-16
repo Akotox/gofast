@@ -41,12 +41,12 @@ class _ShipmentWidgetState extends State<ShipmentWidget> {
         InkWell(
           onTap: () {
             _package.getShipment(widget.package);
-            Navigator.pushReplacement(
+            Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => ShipmentDetailsScreen(
                           package: widget.package,
-                          // progress: widget.progress,
+                          
                         )));
           },
           child: Container(

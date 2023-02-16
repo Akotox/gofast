@@ -315,6 +315,7 @@ class _SteppaState extends State<Steppa> {
                 },
               ),
             ),
+            
             FutureBuilder<DocumentSnapshot>(
                 future: _getCompanies,
                 builder: (context, snapshot) {
@@ -991,10 +992,6 @@ class _SteppaState extends State<Steppa> {
           'courierId': null,
           'courierNumber': null,
           'vehicle': null,
-          // 'startLat': startLat,
-          // 'startLng': startLng,
-          // 'endLat': endLat,
-          // 'endLng': endLng,
         });
         await Fluttertoast.showToast(
           msg: "Your shipment has been uploaded",

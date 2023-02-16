@@ -6,9 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:gofast/exports/export_services.dart';
-import 'package:intl/intl.dart';
 import 'package:gofast/providers/shipment.dart';
-import 'package:gofast/screens/mainscreen_courier.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -44,6 +43,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
   Widget build(BuildContext context) {
     var _detailsProvider = Provider.of<ShipmentProvider>(context);
     var data = _detailsProvider.shipment;
+    var user = _detailsProvider.thisUser;
     setState(() {
       parcelId = data?['shipmentId'];
       // changes = data?['accepted'];
@@ -60,11 +60,10 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
               color: Colors.white,
             ),
             onPressed: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => MainCourier()));
+              Navigator.pop(context);
             }),
         actions: [
-          munhu!.courierVerification == true &&
+          user!['courierVerification'] == true &&
                   widget.package!['courierId'] == _auth.currentUser!.uid
               ? IconButton(
                   icon: const Icon(
@@ -511,7 +510,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                             ],
                           ),
                         ),
-                        munhu!.courierVerification != false
+                        user['courierVerification'] != false
                             ? InkWell(
                                 onLongPress: () {
                                   data['delivered'] != true
@@ -584,6 +583,7 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
           } else if (widget.package!['progress'] == 4) {
             buttontxt = "Delivered";
           }
+          var user = Provider.of<ShipmentProvider>(context).thisUser;
 
           return Stack(
             clipBehavior: Clip.none,
@@ -651,11 +651,11 @@ class _ShipmentDetailsScreenState extends State<ShipmentDetailsScreen> {
                                             .update({
                                           'courierId': FirebaseAuth
                                               .instance.currentUser!.uid,
-                                          'courierNumber': munhu!.phoneNumber,
-                                          'vehicle': munhu!.plate,
-                                          'company': munhu!.company,
+                                          'courierNumber': user!['phoneNumber'],
+                                          'vehicle': user['plate'],
+                                          'company': user['company'],
                                           'update': update,
-                                          'image': munhu!.userImage,
+                                          'image': user['userImage'],
                                           'accepted_at': date,
                                           'createdAt': date,
                                           'accepted': true,
@@ -916,7 +916,7 @@ class Courier extends StatelessWidget {
               ],
             ),
             Container(
-                margin: EdgeInsets.only(left: 18, top: 3),
+                margin: const EdgeInsets.only(left: 18, top: 3),
                 child: data?['delivered'] != false
                     ? Text(
                         "${data?['intransit_time']}",
@@ -952,7 +952,7 @@ class Courier extends StatelessWidget {
               ],
             ),
             Container(
-                margin: EdgeInsets.only(left: 18, top: 3),
+                margin: const EdgeInsets.only(left: 18, top: 3),
                 child: data?['delivered'] != false
                     ? Text(
                         "${data?['deliveredAt']}",
@@ -1037,7 +1037,7 @@ class Time extends StatelessWidget {
               ],
             ),
             Container(
-              margin: EdgeInsets.only(left: 18, top: 3),
+              margin: const EdgeInsets.only(left: 18, top: 3),
               child: Text(
                 "${data?['vehicle']}",
                 textAlign: TextAlign.justify,
@@ -1068,7 +1068,7 @@ class Time extends StatelessWidget {
               ],
             ),
             Container(
-              margin: EdgeInsets.only(left: 18, top: 3),
+              margin: const EdgeInsets.only(left: 18, top: 3),
               child: Text(
                 "${data?['courierNumber']}",
                 textAlign: TextAlign.justify,

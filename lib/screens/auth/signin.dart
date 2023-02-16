@@ -5,12 +5,8 @@ import 'package:glass/glass.dart';
 import 'package:gofast/exports/export_pages.dart';
 import 'package:gofast/exports/export_services.dart';
 import 'package:gofast/widgets/custom_snack.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
-
-import '../../models/user_model.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -114,6 +110,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         fit: BoxFit.cover),
                   ),
                   Container(
+                    height: MediaQuery.of(context).size.height*0.55,
                     margin: const EdgeInsets.symmetric(horizontal: 15),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 25),
@@ -125,8 +122,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       key: _loginFormKey,
                       child: Column(
                         children: [
-                          const SizedBox(
-                            height: 30,
+                           SizedBox(
+                            height: MediaQuery.of(context).size.height*0.12,
+                            child: Text("GoFasta", style: textStyle(70, Colors.white, FontWeight.bold),),
                           ),
 
                           //email

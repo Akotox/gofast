@@ -69,11 +69,36 @@ class Logix {
     return d;
   }
 
-  double rate = 0.5;
-
-  double calculatePrice(double distance, double rate) {
-    return distance * rate;
+double getRate(String product, int weight) {
+  switch (product) {
+    case 'Non Perishable':
+      return 1;
+    case 'Perishable':
+      return 1.5;
+    case 'Daily Necessities':
+      return 1;
+    case 'Files':
+      return 1;
+    case 'Digital Products':
+      return 2.5;
+    case 'Clothing':
+      return 1.5;
+    case 'Home utilities':
+      return 1.5;
+    case 'Liquids':
+      return 1.5;
+    default:
+      return 0;
   }
+}
+
+// use this function by passing a product
+
+// double rate = getRate("Non Perishable");
+
+double calculatePrice(double distance, double rate, double weight, double time) {
+  return distance * rate * weight * time;
+}
 
   clearData() {
     final data = GetStorage();
